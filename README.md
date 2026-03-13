@@ -4,26 +4,26 @@
 {Type}: {What and Why}
 
 ### Type
-Feat: 새로운 기능 추가(add)
+feat: 새로운 기능 추가(add + update)
 
-Update: 코드 업데이트 (update)
+fix: 에러 수정
 
-Fix: 에러 수정
+test: 테스트 코드 추가
 
-Test: 테스트 코드 추가
+docs: 문서 관련 추가/삭제/업데이트
 
-Docs: 문서 관련 추가/삭제/업데이트
-
-Remove: 파일/코드 삭제 (delete)
+remove: 파일/코드 삭제 (delete)
 
 ## 브랜치 컨벤션
-{Type}/{description}
+{Type}/{description}/{description}
 
 ### Type
-feature/ : 새로운 기능 구현 (feature/user-signin)
+develop에서 작업하고, 완성 시 main으로 최종 merge
 
-fix/ : 코드 수정 (fix/login-error)
+feature/ : 새로운 기능 구현(develop/feature)
 
-hotfix/ : 긴급 수정
+fix/ : 버그 수정(develop/fix)
 
-release/ : 배포
+hotfix/ : 긴급 에러 수정(main/hotfix, develop/hotfix)
+
+release/ : 배포 준비(main/release, develop/release)

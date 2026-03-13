@@ -15,15 +15,15 @@ docs: 문서 관련 추가/삭제/업데이트
 remove: 파일/코드 삭제 (delete)
 
 ## 브랜치 컨벤션
-{Type}/{description}/{description}
+{Type}/{description}
 
 ### Type
 develop에서 작업하고, 완성 시 main으로 최종 merge
 
-feature/ : 새로운 기능 구현(develop/feature)
+feature/ : 새로운 기능 구현(feature/login)
 
-fix/ : 버그 수정(develop/fix)
+fix/ : 버그 수정(fix/typeerror)
 
-hotfix/ : 긴급 에러 수정(main/hotfix, develop/hotfix)
+hotfix/ : 긴급 에러 수정(hotfix/env, hotfix/exception)
 
-release/ : 배포 준비(main/release, develop/release)
+release/ : 배포 준비(release/frontend, release/db)

@@ -15,3 +15,15 @@ Test: 테스트 코드 추가
 Docs: 문서 관련 추가/삭제/업데이트
 
 Remove: 파일/코드 삭제 (delete)
+
+## 브랜치 컨벤션
+<Type>/<description>
+
+### Type
+feature/ : 새로운 기능 구현 (feature/user-signin)
+
+fix/ : 코드 수정 (fix/login-error)
+
+hotfix/ : 긴급 수정
+
+release/ : 배포

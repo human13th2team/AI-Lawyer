@@ -1,0 +1,7 @@
+# Google AI Studio (Gemini) API Key
+GOOGLE_AI_API_KEY=AIzaSyC9UpF6JuzVUL1jPgDqCi3JtOtCPfTH1iI
+
+# Supabase (PostgreSQL) Database Configuration
+DB_URL=jdbc:postgresql://aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres
+DB_USERNAME=postgres.bgjtnonkktumuslangiv
+DB_PASSWORD=HkWMWmeJI2krJaRx

@@ -6,6 +6,8 @@ import { CircularScoreChart } from "./CircularScoreChart"
 import { DailyCategoryTrendChart } from "./DailyCategoryTrendChart"
 import { TopCategoriesTable } from "./TopCategoriesTable"
 
+import { Sparkles, Settings as SettingsIcon } from "lucide-react"
+
 interface AveragesResponse {
   riskScore: number
   disadvantagePercent: number
@@ -69,8 +71,36 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-900">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#F6F8FF] font-sans text-slate-900 selection:bg-indigo-100">
+      
+      {/* Dynamic Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex items-center justify-between px-10 py-5 bg-white/70 backdrop-blur-md sticky top-0 z-40 border-b border-white/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-indigo-600 rounded-[14px] flex items-center justify-center shadow-indigo-100 shadow-xl rotate-3">
+            <Sparkles className="text-white w-5 h-5 fill-white/20" />
+          </div>
+          <span className="text-2xl font-black tracking-tight text-[#1E1B4B]">AI-Lawyer <span className="text-indigo-600">.</span></span>
+        </div>
+        
+        <div className="flex items-center gap-10">
+          <div className="hidden md:flex gap-8 text-[13px] font-bold text-slate-500 uppercase tracking-widest">
+            <a href="/" className="hover:text-indigo-600 transition-colors">분석하기</a>
+            <a href="/dashboard" className="text-indigo-600 border-b-2 border-indigo-600 pb-1">대시보드</a>
+            <a href="#" className="hover:text-indigo-600 transition-colors">가이드라인</a>
+          </div>
+          <button className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
+            <SettingsIcon className="w-4 h-4 text-slate-500" />
+          </button>
+        </div>
+      </nav>
+
+      <div className="max-w-7xl mx-auto space-y-8 py-12 px-8 relative z-10">
         
         {/* Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

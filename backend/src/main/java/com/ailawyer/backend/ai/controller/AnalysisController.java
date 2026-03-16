@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -21,25 +20,22 @@ public class AnalysisController {
     private final SmartAnalysisManager analysisManager;
     private final AnalysisContextManager contextManager;
 
-    @GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Analysis API is healthy!");
-    }
-
     /**
      * [CORE] 계약서 업로드 및 분석 요청
      * 신뢰성(비식별화), 보안(휘발성), AI 리포트를 일괄 반환합니다.
      */
     @PostMapping(value = "/upload")
-    public ResponseEntity<?> uploadAndAnalyze(@RequestParam("file") MultipartFile file) {
-        log.info("==> [API 요청] /api/analysis/upload");
+    public ResponseEntity<?> uploadAndAnalyze(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "mode", defaultValue = "detailed") String mode) {
+        log.info("==> [API 요청] /api/analysis/upload | 모드: {}", mode);
         try {
             if (file == null || file.isEmpty()) {
                 log.warn("파일이 비어있거나 누락됨");
                 return ResponseEntity.badRequest().body(Map.of("error", "파일이 없습니다."));
             }
             log.info("파일 이름: {}, 크기: {}", file.getOriginalFilename(), file.getSize());
-            AnalysisResponseDto result = analysisManager.processAnalysis(file);
+            AnalysisResponseDto result = analysisManager.processAnalysis(file, mode);
 
             // 결과가 계약서가 아닌 경우 차단 및 안내
             if (!result.isContract()) {
@@ -58,8 +54,7 @@ public class AnalysisController {
                     "timestamp", java.time.ZonedDateTime.now().toString(),
                     "fileName", file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown",
                     "fileType", file.getContentType() != null ? file.getContentType() : "application/octet-stream",
-                    "result", result
-            );
+                    "result", result);
 
             return ResponseEntity.ok(finalResponse);
         } catch (Exception e) {

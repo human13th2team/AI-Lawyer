@@ -1,7 +1,7 @@
-package com.ailawyer.backend.controller;
+package com.ailawyer.backend.alert.controller;
 
-import com.ailawyer.backend.model.entity.BlacklistKeyword;
-import com.ailawyer.backend.service.CompanyInsightsService;
+import com.ailawyer.backend.alert.entity.BlacklistKeyword;
+import com.ailawyer.backend.alert.service.CompanyInsightsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

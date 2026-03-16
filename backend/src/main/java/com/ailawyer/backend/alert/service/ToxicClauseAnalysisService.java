@@ -1,9 +1,9 @@
-package com.ailawyer.backend.service;
+package com.ailawyer.backend.alert.service;
 
-import com.ailawyer.backend.model.entity.ContractDocument;
-import com.ailawyer.backend.model.entity.ToxicClauseAlert;
-import com.ailawyer.backend.repository.ContractDocumentRepository;
-import com.ailawyer.backend.repository.ToxicClauseAlertRepository;
+import com.ailawyer.backend.alert.entity.ContractDocument;
+import com.ailawyer.backend.alert.entity.ToxicClauseAlert;
+import com.ailawyer.backend.alert.repository.ContractDocumentRepository;
+import com.ailawyer.backend.alert.repository.ToxicClauseAlertRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

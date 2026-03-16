@@ -1,6 +1,6 @@
-package com.ailawyer.backend.repository;
+package com.ailawyer.backend.alert.repository;
 
-import com.ailawyer.backend.model.entity.NotificationEvent;
+import com.ailawyer.backend.alert.entity.NotificationEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

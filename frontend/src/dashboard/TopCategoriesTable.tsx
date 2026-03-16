@@ -111,13 +111,13 @@ export function TopCategoriesTable() {
                       <div className="flex items-center justify-center space-x-2">
                         {item.avgRiskScore >= 70 && <AlertTriangle className="w-4 h-4 text-orange-500" />}
                         <span className={`font-semibold ${item.avgRiskScore >= 70 ? 'text-orange-600' : 'text-slate-600'}`}>
-                          {item.avgRiskScore.toFixed(1)}
+                          {item.avgRiskScore.toFixed(2)}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <span className="font-semibold text-[#4a4175]">
-                        {item.avgDisadvantagePercent.toFixed(1)}%
+                        {item.avgDisadvantagePercent.toFixed(2)}%
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">

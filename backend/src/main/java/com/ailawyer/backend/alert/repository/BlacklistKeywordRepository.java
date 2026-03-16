@@ -1,6 +1,6 @@
-package com.ailawyer.backend.repository;
+package com.ailawyer.backend.alert.repository;
 
-import com.ailawyer.backend.model.entity.BlacklistKeyword;
+import com.ailawyer.backend.alert.entity.BlacklistKeyword;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

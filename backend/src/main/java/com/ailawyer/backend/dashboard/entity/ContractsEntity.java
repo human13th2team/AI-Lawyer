@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.OffsetDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +19,7 @@ public class ContractsEntity {
     @Column(name = "contract_id")
     private Long contractId;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 

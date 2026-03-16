@@ -1,7 +1,7 @@
-package com.ailawyer.backend.controller;
+package com.ailawyer.backend.alert.controller;
 
-import com.ailawyer.backend.model.entity.ContractDocument;
-import com.ailawyer.backend.service.ToxicClauseAnalysisService;
+import com.ailawyer.backend.alert.entity.ContractDocument;
+import com.ailawyer.backend.alert.service.ToxicClauseAnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

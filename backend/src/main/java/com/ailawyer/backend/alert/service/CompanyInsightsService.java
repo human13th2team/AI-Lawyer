@@ -1,15 +1,14 @@
-package com.ailawyer.backend.service;
+package com.ailawyer.backend.alert.service;
 
-import com.ailawyer.backend.model.entity.BlacklistKeyword;
-import com.ailawyer.backend.model.entity.ContractDocument;
-import com.ailawyer.backend.repository.BlacklistKeywordRepository;
-import com.ailawyer.backend.repository.ContractDocumentRepository;
+import com.ailawyer.backend.alert.entity.BlacklistKeyword;
+import com.ailawyer.backend.alert.entity.ContractDocument;
+import com.ailawyer.backend.alert.repository.BlacklistKeywordRepository;
+import com.ailawyer.backend.alert.repository.ContractDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

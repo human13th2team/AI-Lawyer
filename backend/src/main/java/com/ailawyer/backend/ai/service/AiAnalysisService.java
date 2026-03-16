@@ -2,33 +2,31 @@ package com.ailawyer.backend.ai.service;
 
 import com.ailawyer.backend.ai.dto.AnalysisResponseDto;
 import dev.langchain4j.data.image.Image;
+import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.service.AiServices;
 import jakarta.annotation.PostConstruct;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
-import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 
 @Slf4j
 @Service
 public class AiAnalysisService {
 
-    @Value("${groq.api.key}")
+    @Value("${google.ai.api.key}")
+    private String geminiApiKey;
+
+    @Value("${groq.api.key:}")
     private String groqApiKey;
 
-    @Value("${groq.api.url}")
+    @Value("${groq.api.url:https://api.groq.com/openai/v1}")
     private String groqApiUrl;
 
     private final AnalysisContextManager contextManager;
+    private AiLegalAssistant geminiAssistant;
+    private AiLegalAssistant geminiVisionAssistant;
     private AiLegalAssistant groqAssistant;
-    private AiLegalAssistant groqVisionAssistant;
 
     public AiAnalysisService(AnalysisContextManager contextManager) {
         this.contextManager = contextManager;
@@ -36,126 +34,117 @@ public class AiAnalysisService {
 
     @PostConstruct
     public void init() {
+        if (geminiApiKey != null && !geminiApiKey.isEmpty()) {
+            initGemini();
+        }
         if (groqApiKey != null && !groqApiKey.isEmpty()) {
             initGroq();
         }
     }
 
+    private void initGemini() {
+        try {
+            log.info("Google Gemini 모델 초기화 중...");
+            
+            // 상세 분석용 (Gemini 1.5 Pro)
+            this.geminiAssistant = AiServices.builder(AiLegalAssistant.class)
+                    .chatLanguageModel(GoogleAiGeminiChatModel.builder()
+                            .apiKey(geminiApiKey)
+                            .modelName("gemini-2.5-pro")
+                            .build())
+                    .build();
+
+            // 비전 분석용 (Gemini 1.5 Flash)
+            this.geminiVisionAssistant = AiServices.builder(AiLegalAssistant.class)
+                    .chatLanguageModel(GoogleAiGeminiChatModel.builder()
+                            .apiKey(geminiApiKey)
+                            .modelName("gemini-2.5-flash")
+                            .build())
+                    .build();
+
+            log.info("Gemini 모델 초기화 완료 (상세 분석용)");
+        } catch (Exception e) {
+            log.error("Gemini 초기화 실패: {}", e.getMessage());
+        }
+    }
+
     private void initGroq() {
         try {
-            log.info("Groq 모델 초기화 중... URL: {}", groqApiUrl);
+            log.info("Groq 모델 초기화 중...");
             
-            // 1. 텍스트 분석용 고성능 모델 (Llama 3.3 70B)
-            dev.langchain4j.model.openai.OpenAiChatModel textModel = dev.langchain4j.model.openai.OpenAiChatModel.builder()
+            dev.langchain4j.model.openai.OpenAiChatModel groqModel = dev.langchain4j.model.openai.OpenAiChatModel.builder()
                     .apiKey(groqApiKey)
                     .baseUrl(groqApiUrl)
                     .modelName("llama-3.3-70b-versatile")
-                    .logRequests(true)
-                    .logResponses(true)
-                    .maxTokens(2048)
+                    .maxTokens(1024)
                     .build();
 
             this.groqAssistant = AiServices.builder(AiLegalAssistant.class)
-                    .chatLanguageModel(textModel)
+                    .chatLanguageModel(groqModel)
                     .build();
 
-            // 2. 이미지(Vision) 분석 전용 모델 (Llama 4 Scout)
-            dev.langchain4j.model.openai.OpenAiChatModel visionModel = dev.langchain4j.model.openai.OpenAiChatModel.builder()
-                    .apiKey(groqApiKey)
-                    .baseUrl(groqApiUrl)
-                    .modelName("meta-llama/llama-4-scout-17b-16e-instruct") 
-                    .logRequests(true)
-                    .logResponses(true)
-                    .maxTokens(800) // 토큰 한도 대폭 하향 (안정성 최우선)
-                    .build();
-
-            this.groqVisionAssistant = AiServices.builder(AiLegalAssistant.class)
-                    .chatLanguageModel(visionModel)
-                    .build();
-
-            log.info("Groq 메인 및 Vision 모델 초기화 완료");
+            log.info("Groq 모델 초기화 완료 (심플 분석용)");
         } catch (Exception e) {
-            log.error("Groq 모델 초기화 실패: {}", e.getMessage());
+            log.error("Groq 초기화 실패: {}", e.getMessage());
         }
     }
 
-    public AnalysisResponseDto analyze(String extractedText, String categoryList) {
-        log.info("Groq(텍스트 전문 모델) 분석 시작... 카테고리 후보: {}", categoryList);
+    public AnalysisResponseDto analyze(String extractedText, String categoryList, String mode) {
+        boolean isDetailed = "detailed".equalsIgnoreCase(mode);
+        log.info("AI 분석 시작 | 모드: {} | 엔진: {}", mode, isDetailed ? "Gemini" : "Groq");
+        
         try {
-            if (groqAssistant == null) {
-                log.error("Groq Assistant가 초기화되지 않았습니다.");
-                throw new IllegalStateException("Groq 서비스 초기화 실패");
-            }
-            AnalysisResponseDto response = groqAssistant.analyzeContract(extractedText, categoryList);
-            log.info("Groq 분석 완료");
+            AiLegalAssistant assistant = (isDetailed) ? geminiAssistant : groqAssistant;
+            if (assistant == null) assistant = (geminiAssistant != null) ? geminiAssistant : groqAssistant;
+            
+            if (assistant == null) throw new IllegalStateException("사용 가능한 AI 서비스가 없습니다.");
+            
+            AnalysisResponseDto response = assistant.analyzeContract(extractedText, categoryList);
+            log.info("AI 텍스트 분석 완료");
             return response;
         } catch (Exception e) {
-            log.error("Groq 분석 중 오류: {}", e.getMessage());
-            throw new RuntimeException("AI 분석 중 오류가 발생했습니다: " + e.getMessage(), e);
+            log.error("AI 분석 중 오류: {}", e.getMessage());
+            throw new RuntimeException("AI 분석 중 오류가 발생했습니다.", e);
         }
     }
 
-    public AnalysisResponseDto analyzeImage(byte[] imageBytes, String mimeType, String categoryList) {
-        log.info("Groq(Vision 모델) 이미지 분석 시작... 카테고리 후보: {}", categoryList);
+    public AnalysisResponseDto analyzeImage(byte[] imageBytes, String mimeType, String categoryList, String mode) {
+        boolean isDetailed = "detailed".equalsIgnoreCase(mode);
+        log.info("AI 이미지 분석 시작 | 모드: {} | 엔진: {}", mode, isDetailed ? "Gemini Vision" : "Groq");
+        
         try {
-            if (groqVisionAssistant == null) {
-                log.error("Groq Vision Assistant가 초기화되지 않았습니다.");
-                throw new IllegalStateException("Groq Vision 서비스 초기화 실패");
-            }
+            // Groq는 비전 성능이 낮으므로 이미지는 가급적 Gemini(상세)로 유도하나, 모드에 따라 선택
+            AiLegalAssistant assistant = (isDetailed) ? geminiVisionAssistant : groqAssistant;
+            if (assistant == null) assistant = geminiVisionAssistant;
 
-            // 고해상도 이미지는 Groq 페이로드 제한(4MB)을 넘을 수 있어 압축 수행
-            byte[] compressedBytes = compressImage(imageBytes);
-            log.info("이미지 압축 완료");
+            if (assistant == null) throw new IllegalStateException("사용 가능한 비전 서비스가 없습니다.");
 
             Image image = Image.builder()
-                    .base64Data(Base64.getEncoder().encodeToString(compressedBytes))
+                    .base64Data(Base64.getEncoder().encodeToString(imageBytes))
                     .mimeType(mimeType)
                     .build();
 
-            AnalysisResponseDto response = groqVisionAssistant.analyzeContractImage(image, categoryList);
-            log.info("Groq Vision 분석 완료");
+            AnalysisResponseDto response = assistant.analyzeContractImage(image, categoryList);
+            log.info("AI 이미지 분석 완료");
             return response;
         } catch (Exception e) {
-            log.error("Groq 이미지 분석 중 오류: {}", e.getMessage());
-            throw new RuntimeException("이미지 분석 중 오류가 발생했습니다: " + e.getMessage(), e);
-        }
-    }
-
-    private byte[] compressImage(byte[] imageBytes) {
-        // 모든 이미지에 대해 가독성을 해치지 않는 선에서 최대 압축 수행
-        try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-            BufferedImage originalImage = ImageIO.read(bais);
-            
-            if (originalImage == null) return imageBytes;
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Thumbnails.of(originalImage)
-                    .size(1024, 1024) // 해상도 1024로 제한 (Groq 토큰 소모량 감소)
-                    .outputFormat("jpg")
-                    .outputQuality(0.6) // 품질 60% (용량 대폭 감소)
-                    .toOutputStream(baos);
-            
-            byte[] result = baos.toByteArray();
-            // 압축 결과가 더 크면 원본 반환 (드문 경우)
-            return result.length < imageBytes.length ? result : imageBytes;
-        } catch (IOException e) {
-            log.warn("이미지 압축 중 오류 발생, 원본 사용: {}", e.getMessage());
-            return imageBytes;
+            log.error("AI 이미지 분석 중 오류: {}", e.getMessage());
+            throw new RuntimeException("이미지 분석 중 오류가 발생했습니다.", e);
         }
     }
 
     public String ask(String question) {
         String context = contextManager.getContext("default");
-        log.info("Groq Q&A 시작... 질문: {}", question);
+        log.info("AI 질의응답 시작... 질문: {}", question);
         try {
-            if (groqAssistant == null) {
-                return "Groq 모델이 준비되지 않았습니다.";
+            if (geminiAssistant == null) {
+                return "AI 모델이 준비되지 않았습니다.";
             }
-            return groqAssistant.answerLegalQuestion(context, question);
+            return geminiAssistant.answerLegalQuestion(context, question);
         } catch (Exception e) {
-            log.error("Groq 답변 생성 중 오류 발생: {}", e.getMessage(), e);
+            log.error("AI 답변 생성 중 오류 발생: {}", e.getMessage(), e);
             return "답변 생성 중 오류가 발생했습니다: " + e.getMessage();
         }
     }
 }
+

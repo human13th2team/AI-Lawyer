@@ -1,16 +1,18 @@
 package com.ailawyer.backend.ai.service;
 
 import com.ailawyer.backend.ai.dto.AnalysisResponseDto;
-import com.ailawyer.backend.ai.repository.AiAnalysisReportRepository;
-import com.ailawyer.backend.ai.repository.AiCategoryRepository;
-import com.ailawyer.backend.ai.repository.AiContractRepository;
+import com.ailawyer.backend.dashboard.entity.AnalysisReportEntity;
+import com.ailawyer.backend.dashboard.entity.CategoryEntity;
+import com.ailawyer.backend.dashboard.entity.ContractsEntity;
+import com.ailawyer.backend.dashboard.repository.AnalysisReportRepository;
+import com.ailawyer.backend.dashboard.repository.CategoryRepository;
+import com.ailawyer.backend.dashboard.repository.ContractRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,32 +27,32 @@ public class SmartAnalysisManager {
     private final DocumentParser documentParser;
     private final AiAnalysisService aiAnalysisService;
 
-    // DB 저장을 위한 레포지토리 주입 (AI 전용)
-    private final AiAnalysisReportRepository reportRepository;
-    private final AiContractRepository contractRepository;
-    private final AiCategoryRepository categoryRepository;
+    // DB 저장을 위한 기존 대시보드 레포지토리 주입
+    private final AnalysisReportRepository reportRepository;
+    private final ContractRepository contractRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * 전체 분석 프로세스를 관리합니다. (PDF 텍스트 추출 혹은 이미지 직접 분석)
      */
-    public AnalysisResponseDto processAnalysis(MultipartFile file) throws IOException {
-        log.info("파일 분석 시작: {}", file.getOriginalFilename());
+    public AnalysisResponseDto processAnalysis(MultipartFile file, String mode) throws IOException {
+        log.info("파일 분석 시작: {} (모드: {})", file.getOriginalFilename(), mode);
         String contentType = Objects.requireNonNull(file.getContentType());
 
         // 0. DB에서 현재 등록된 카테고리 목록 가져오기 (AI에게 힌트로 제공)
         String categoryList = categoryRepository.findAll().stream()
-                .map(com.ailawyer.backend.ai.domain.Category::getCategoryName)
+                .map(CategoryEntity::getCategoryName)
                 .reduce((a, b) -> a + ", " + b)
-                .orElse("근로계약서, 임대차계약서, 위임계약서, 용역계약서");
+                .orElse("근로/노무, 용역/프리랜서, 부동산/임대차, 기업/투자, 소비자/기타");
 
         AnalysisResponseDto result;
         if (contentType.equals("application/pdf")) {
             // 1. PDF인 경우 텍스트 추출 후 분석
             String rawText = documentParser.extractText(file);
-            result = aiAnalysisService.analyze(rawText, categoryList);
+            result = aiAnalysisService.analyze(rawText, categoryList, mode);
         } else if (contentType.startsWith("image/")) {
-            // 2. 이미지인 경우 Gemini Vision으로 직접 분석
-            result = aiAnalysisService.analyzeImage(file.getBytes(), contentType, categoryList);
+            // 2. 이미지인 경우 비전 모델로 직접 분석
+            result = aiAnalysisService.analyzeImage(file.getBytes(), contentType, categoryList, mode);
         } else {
             throw new IllegalArgumentException("지원하지 않는 파일 형식입니다: " + contentType);
         }
@@ -67,24 +69,25 @@ public class SmartAnalysisManager {
         try {
             log.info("분석 결과를 Analysis_Report 테이블에 저장 중...");
 
-            // 1) 카테고리 매핑 (없으면 생성)
-            String docType = result.getDocumentType() != null ? result.getDocumentType() : "기타 계약서";
-            com.ailawyer.backend.ai.domain.Category category = categoryRepository.findByCategoryName(docType)
-                    .orElseGet(() -> categoryRepository.save(new com.ailawyer.backend.ai.domain.Category(docType)));
+            // 1) 카테고리 매핑 (없으면 생성 - 가이드를 따르지만 안전장치로 유지)
+            String docType = result.getDocumentType() != null ? result.getDocumentType() : "소비자/기타";
+            CategoryEntity category = categoryRepository.findByCategoryName(docType)
+                    .orElseGet(() -> categoryRepository.save(CategoryEntity.builder().categoryName(docType).build()));
 
             // 2) 계약(Contract) 레코드 생성
-            com.ailawyer.backend.ai.domain.Contract contract = new com.ailawyer.backend.ai.domain.Contract();
-            contract.setCategory(category);
-            contract.setUserId(1L); // 테스트용 기본 User ID
-            contract.setImgUrl("uploaded_file"); // 실제 경로 혹은 S3 URL이 들어갈 자리
+            ContractsEntity contract = ContractsEntity.builder()
+                    .category(category)
+                    .userId(1L) // 테스트용 기본 User ID
+                    .imgUrl("uploaded_file") // 실제 경로 혹은 S3 URL이 들어갈 자리
+                    .build();
             contractRepository.save(contract);
 
             // 3) 분석 리포트(AnalysisReport) 저장
-            com.ailawyer.backend.ai.domain.AnalysisReport report = new com.ailawyer.backend.ai.domain.AnalysisReport();
-            report.setContract(contract);
-            report.setUserId(1L);
-            report.setScore(result.getRiskScore());
-            report.setPenaltyScore(result.getDisadvantagePercentage());
+            AnalysisReportEntity report = AnalysisReportEntity.builder()
+                    .contract(contract)
+                    .score(result.getRiskScore())
+                    .penaltyScore(result.getDisadvantagePercentage())
+                    .build();
 
             reportRepository.save(report);
             log.info("Analysis_Report 저장 완료. ID: {}", report.getReportId());

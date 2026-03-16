@@ -15,15 +15,15 @@ export function CircularScoreChart({
   benchmarkText,
   color = "#ea580c", // Tailwind orange-600 equivalent
 }: CircularScoreChartProps) {
-  const radius = 60
-  const strokeWidth = 14
+  const radius = 75
+  const strokeWidth = 12
   const normalizedRadius = radius - strokeWidth / 2
   const circumference = normalizedRadius * 2 * Math.PI
   const strokeDashoffset = circumference - (score / 100) * circumference
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
-      <h3 className="text-sm font-semibold tracking-wider text-[#635f79] uppercase">
+      <h3 className="text-[13px] font-bold tracking-wider text-[#635f79] uppercase">
         {title}
       </h3>
       
@@ -59,10 +59,10 @@ export function CircularScoreChart({
         
         {/* Inner Text */}
         <div className="absolute flex flex-col items-center justify-center text-center">
-          <span className="text-4xl font-bold" style={{ color }}>
-            {score}
+          <span className="text-3xl font-black tabular-nums tracking-tighter" style={{ color }}>
+            {score.toFixed(2)}
           </span>
-          <span className="text-sm font-medium text-[#7d7b90]">
+          <span className="text-[12px] font-bold text-[#7d7b90] mt-1">
             {subtitle}
           </span>
         </div>

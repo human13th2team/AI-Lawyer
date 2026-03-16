@@ -1,4 +1,4 @@
-package com.ailawyer.backend.model.entity;
+package com.ailawyer.backend.alert.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

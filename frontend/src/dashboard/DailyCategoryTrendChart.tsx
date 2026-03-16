@@ -64,7 +64,7 @@ export function DailyCategoryTrendChart() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={data}
-                margin={{ top: 10, right: 30, left: -10, bottom: 0 }}
+                margin={{ top: 10, right: 30, left: -10, bottom: 30 }}
               >
                 <defs>
                   <linearGradient id="colorPrimary" x1="0" y1="0" x2="0" y2="1">
@@ -77,9 +77,9 @@ export function DailyCategoryTrendChart() {
                   dataKey="date" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: "#7d7b90", fontSize: 12, fontWeight: 600 }} 
-                  dy={10}
-                  tickMargin={10}
+                  tick={{ fill: "#7d7b90", fontSize: 12, fontWeight: 700 }} 
+                  dy={15}
+                  tickMargin={5}
                   minTickGap={20}
                 />
                 <YAxis 

@@ -23,12 +23,14 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState<"detailed" | "simple">("detailed");
   
   // 챗봇 관련 상태
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [userInput, setUserInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,16 +51,8 @@ export default function Home() {
           "clause": "본 계약은 2027년 12월 31일부로 종료되며 자동 갱신되지 않는다.",
           "is_unfair": false,
           "explanation": "마감일이 명확히 명시되어 있어 기한 관리에 용이합니다. 다만, 갱신 의사가 있을 경우 1개월 전 서면 통보 절차를 추가하는 것이 안전합니다.",
-          "legal_base": "민법 제660조 (기간의 약정이 없는 고용의 해지통고)",
+          "legal_base": "민법 제660조 (기간의 약정과 해지)",
           "negotiation_script": "대표님, 계약 만료 30일 전에 상호 합의 하에 연장 여부를 검토한다는 조항을 넣는 것은 어떨까요?"
-        },
-        {
-          "topic": "근로 시간 외 수당",
-          "clause": "연장 근로 시 별도의 수당 없이 포괄임금제에 포함된 것으로 간주한다.",
-          "is_unfair": true,
-          "explanation": "포괄임금제 적용 요건이 불분명할 경우 향후 분쟁의 소지가 큽니다. 실제 근로시간을 산정하기 어려운 경우인지 재검토가 필요합니다.",
-          "legal_base": "근로기준법 제56조 (연장·야간 및 휴일 근로)",
-          "negotiation_script": "해당 조항은 실제 연장 근로 시 법적 리스크가 있을 수 있으니, 구체적인 산정 방식을 명시해 달라고 요청해 보세요."
         }
       ]
     }
@@ -70,8 +64,53 @@ export default function Home() {
       setResult(demoData);
       setShowResult(true);
       setLoading(false);
-      setMessages([{ role: "ai", content: "안녕하세요 대표님, 계약서 분석이 완료되었습니다. 별도의 창으로 리포트를 띄워드렸습니다. 확인 후 궁금한 점은 언제든 말씀해 주세요!" }]);
+      setMessages([{ role: "ai", content: `안녕하세요 대표님, ${analysisMode === "detailed" ? "정밀 상세" : "빠른 간략"} 분석이 완료되었습니다. 별도의 창으로 리포트를 띄워드렸습니다. 확인 후 궁금한 점은 언제든 말씀해 주세요!` }]);
     }, 1500);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = event.target.files?.[0];
+    if (uploadedFile) {
+      setFile(uploadedFile);
+      setError(null);
+      setMessages([{ role: "ai", content: `대표님, [${uploadedFile.name}] 파일이 준비되었습니다. 아래 분석 시작 버튼을 눌러주세요!` }]);
+    }
+  };
+
+  const startAnalysis = async () => {
+    if (!file) {
+      setError("먼저 파일을 첨부해 주세요.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("mode", analysisMode);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/analysis/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "분석 중 오류가 발생했습니다.");
+      }
+
+      const data = await response.json();
+      setResult(data);
+      setShowResult(true);
+      setMessages([{ role: "ai", content: "분석이 완료되었습니다, 대표님. 정밀 리포트를 확인해 보세요." }]);
+    } catch (err: any) {
+      setError(err.message);
+      setMessages([{ role: "ai", content: `죄송합니다 대표님, 오류가 발생했습니다: ${err.message}` }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -131,35 +170,73 @@ export default function Home() {
         </div>
 
         {/* Upload Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 max-w-4xl mx-auto">
-          <div className="bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(31,38,135,0.08)] p-4 border border-white relative group">
+        <div className="max-w-4xl mx-auto space-y-8">
+          
+          {/* Analysis Mode Selector */}
+          <div className="flex justify-center">
+            <div className="bg-white/50 backdrop-blur-sm p-1.5 rounded-2xl border border-white shadow-sm inline-flex gap-2">
+              <button 
+                onClick={() => setAnalysisMode("detailed")}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${analysisMode === "detailed" ? "bg-[#1E1B4B] text-white shadow-lg" : "text-slate-500 hover:bg-white"}`}
+              >
+                <Sparkles className={`w-4 h-4 ${analysisMode === "detailed" ? "text-indigo-400" : "text-slate-400"}`} />
+                정밀 상세 분석
+              </button>
+              <button 
+                onClick={() => setAnalysisMode("simple")}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${analysisMode === "simple" ? "bg-[#1E1B4B] text-white shadow-lg" : "text-slate-500 hover:bg-white"}`}
+              >
+                <Monitor className={`w-4 h-4 ${analysisMode === "simple" ? "text-indigo-400" : "text-slate-400"}`} />
+                빠른 간략 분석
+              </button>
+            </div>
+          </div>
+
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className={`bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(31,38,135,0.08)] p-4 border border-white relative group cursor-pointer transition-all ${file ? 'ring-4 ring-indigo-100' : ''}`}
+          >
              <div className="border-2 border-dashed border-slate-100 rounded-[32px] p-20 flex flex-col items-center justify-center transition-all group-hover:border-indigo-200 group-hover:bg-slate-50/50">
                <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-                 <FileUp className="text-indigo-600 w-10 h-10" />
+                 {file ? <CheckCircle className="text-green-500 w-10 h-10" /> : <FileUp className="text-indigo-600 w-10 h-10" />}
                </div>
                
-               <h3 className="text-2xl font-black text-slate-800 mb-2">계약서 파일이나 폴더를 올려주세요</h3>
-               <p className="text-slate-400 font-medium mb-10">PDF, JPG, PNG 파일 및 디렉토리 업로드를 지원합니다.</p>
+               <h3 className="text-2xl font-black text-slate-800 mb-2">
+                 {file ? `[${file.name}]` : "계약서 파일이나 폴더를 올려주세요"}
+               </h3>
+               <p className="text-slate-400 font-medium mb-10">
+                 {file ? "파일이 준비되었습니다. 아래 버튼을 눌러 분석을 시작하세요." : "PDF, JPG, PNG 파일 및 디렉토리 업로드를 지원합니다."}
+               </p>
 
-               <div className="flex flex-wrap justify-center gap-4">
+               <div className="flex flex-wrap justify-center gap-4" onClick={(e) => e.stopPropagation()}>
+                 <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileSelect} 
+                    className="hidden" 
+                    accept=".pdf,.jpg,.jpeg,.png"
+                 />
                  <button 
-                   onClick={handleDemo}
-                   disabled={loading}
-                   className="flex items-center gap-3 px-10 py-5 bg-[#1E1B4B] text-white rounded-2xl font-black text-lg shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 hover:shadow-indigo-300 active:scale-95 disabled:opacity-50"
+                   onClick={startAnalysis}
+                   disabled={loading || !file}
+                   className="flex items-center gap-3 px-10 py-5 bg-[#1E1B4B] text-white rounded-2xl font-black text-lg shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 hover:shadow-indigo-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                    {loading ? (
                      <span className="flex items-center gap-3">
-                       <Clock className="w-6 h-6 animate-spin" /> 분석 중...
+                       <Clock className="w-6 h-6 animate-spin" /> 분석 진행 중...
                      </span>
                    ) : (
                      <span className="flex items-center gap-3">
-                       <Monitor className="w-6 h-6" /> 데모 분석 시작하기
+                       <Sparkles className="w-6 h-6" /> {analysisMode === "detailed" ? "정밀 분석 시작하기" : "빠른 분석 시작하기"}
                      </span>
                    )}
                  </button>
                  
-                 <button className="flex items-center gap-3 px-10 py-5 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-lg hover:border-indigo-100 hover:text-indigo-600 transition-all">
-                   <FolderUp className="w-6 h-6" /> 폴더 업로드
+                 <button 
+                  onClick={handleDemo}
+                  className="flex items-center gap-3 px-10 py-5 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-lg hover:border-indigo-100 hover:text-indigo-600 transition-all"
+                 >
+                   <Monitor className="w-6 h-6" /> 데모 실행
                  </button>
                </div>
              </div>

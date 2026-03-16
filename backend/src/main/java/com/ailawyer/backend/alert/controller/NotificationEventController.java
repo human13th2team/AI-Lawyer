@@ -1,7 +1,7 @@
-package com.ailawyer.backend.controller;
+package com.ailawyer.backend.alert.controller;
 
-import com.ailawyer.backend.model.entity.NotificationEvent;
-import com.ailawyer.backend.repository.NotificationEventRepository;
+import com.ailawyer.backend.alert.entity.NotificationEvent;
+import com.ailawyer.backend.alert.repository.NotificationEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

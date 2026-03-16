@@ -133,9 +133,9 @@ public class AiAnalysisService {
         }
     }
 
-    public String ask(String question) {
-        String context = contextManager.getContext("default");
-        log.info("AI 질의응답 시작... 질문: {}", question);
+    public String ask(String contextKey, String question) {
+        String context = contextManager.getContext(contextKey);
+        log.info("AI 질의응답 시작... 사용자(Key): {}, 질문: {}", contextKey, question);
         try {
             if (geminiAssistant == null) {
                 return "AI 모델이 준비되지 않았습니다.";

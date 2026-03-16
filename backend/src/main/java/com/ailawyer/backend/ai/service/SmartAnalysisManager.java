@@ -120,7 +120,7 @@ public class SmartAnalysisManager {
     /**
      * 분석 리포트 기반 대화형 질의응답 (RAG)
      */
-    public String askQuestion(String question) {
-        return aiAnalysisService.ask(question);
+    public String askQuestion(String contextKey, String question) {
+        return aiAnalysisService.ask(contextKey, question);
     }
 }

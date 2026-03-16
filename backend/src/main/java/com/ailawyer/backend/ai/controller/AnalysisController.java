@@ -46,8 +46,10 @@ public class AnalysisController {
                         "details", "근로계약서, 임대차계약서 등 실제 계약 문서를 업로드해 주세요."));
             }
 
-            // 계약서로 판별된 경우 컨텍스트 저장
-            contextManager.saveContext("default", result.toString());
+            // 계약서로 판별된 경우 컨텍스트 저장 (사용자별 독립 컨텍스트)
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            String contextKey = (auth != null && auth.isAuthenticated()) ? auth.getName() : "default";
+            contextManager.saveContext(contextKey, result.toString());
 
             // [대표님 요청 사항] 최종 JSON 응답 레이아웃 구성
             Map<String, Object> finalResponse = Map.of(
@@ -81,7 +83,10 @@ public class AnalysisController {
     @PostMapping("/chat")
     public ResponseEntity<Map<String, String>> chat(@RequestBody Map<String, String> request) {
         String question = request.get("question");
-        String answer = analysisManager.askQuestion(question);
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String contextKey = (auth != null && auth.isAuthenticated()) ? auth.getName() : "default";
+
+        String answer = analysisManager.askQuestion(contextKey, question);
         return ResponseEntity.ok(Map.of("answer", answer));
     }
 }

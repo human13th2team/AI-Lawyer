@@ -16,14 +16,20 @@ import {
   ChevronRight
 } from "lucide-react";
 import { AnalysisResultView } from "./analysis/AnalysisResultView";
+import { Navbar } from "@/components/Navbar";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { user, token } = useAuth();
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<"detailed" | "simple">("detailed");
+  const [showLoginModal, setShowLoginModal] = useState(false);
   
   // 챗봇 관련 상태
   const [chatOpen, setChatOpen] = useState(false);
@@ -71,6 +77,10 @@ export default function Home() {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
     if (uploadedFile) {
+      if (!user) {
+        setShowLoginModal(true);
+        return;
+      }
       setFile(uploadedFile);
       setError(null);
       setMessages([{ role: "ai", content: `대표님, [${uploadedFile.name}] 파일이 준비되었습니다. 아래 분석 시작 버튼을 눌러주세요!` }]);
@@ -78,6 +88,11 @@ export default function Home() {
   };
 
   const startAnalysis = async () => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
     if (!file) {
       setError("먼저 파일을 첨부해 주세요.");
       return;
@@ -93,10 +108,16 @@ export default function Home() {
     try {
       const response = await fetch("http://localhost:8080/api/analysis/upload", {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
         body: formData,
       });
 
       if (!response.ok) {
+        if (response.status === 403) {
+            throw new Error("분석 권한이 없습니다. 다시 로그인해 주세요.");
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || "분석 중 오류가 발생했습니다.");
       }
@@ -132,26 +153,35 @@ export default function Home() {
         <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex items-center justify-between px-10 py-5 bg-white/70 backdrop-blur-md sticky top-0 z-40 border-b border-white/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-600 rounded-[14px] flex items-center justify-center shadow-indigo-100 shadow-xl rotate-3">
-            <Sparkles className="text-white w-5 h-5 fill-white/20" />
+      <Navbar />
+
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] p-10 max-w-[400px] w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto">
+              <Sparkles className="w-10 h-10 text-indigo-600" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-[#1E1B4B]">로그인이 필요합니다</h3>
+              <p className="text-slate-500 font-medium">정밀 분석 서비스는 대표님들의 <br/> 안전한 회원 정보가 꼭 필요합니다.</p>
+            </div>
+            <div className="flex flex-col gap-3 pt-4">
+              <button 
+                onClick={() => router.push("/login")}
+                className="w-full py-4 bg-[#1E1B4B] text-white rounded-2xl font-black shadow-xl shadow-indigo-100 hover:-translate-y-1 transition-all"
+              >
+                로그인하러 가기
+              </button>
+              <button 
+                onClick={() => setShowLoginModal(false)}
+                className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all"
+              >
+                나중에 하기
+              </button>
+            </div>
           </div>
-          <span className="text-2xl font-black tracking-tight text-[#1E1B4B]">AI-Lawyer <span className="text-indigo-600">.</span></span>
         </div>
-        
-        <div className="flex items-center gap-10">
-          <div className="hidden md:flex gap-8 text-[13px] font-bold text-slate-500 uppercase tracking-widest">
-            <a href="/" className="text-indigo-600 border-b-2 border-indigo-600 pb-1">분석하기</a>
-            <a href="/dashboard" className="hover:text-indigo-600 transition-colors">대시보드</a>
-            <a href="#" className="hover:text-indigo-600 transition-colors">가이드라인</a>
-          </div>
-          <button className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
-            <SettingsIcon className="w-4 h-4 text-slate-500" />
-          </button>
-        </div>
-      </nav>
+      )}
 
       <main className="max-w-6xl mx-auto py-20 px-6 relative z-10 text-center">
         

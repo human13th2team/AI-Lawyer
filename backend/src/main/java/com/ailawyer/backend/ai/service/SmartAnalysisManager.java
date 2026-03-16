@@ -15,6 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 
+import com.ailawyer.backend.auth.repository.UserRepository;
+import com.ailawyer.backend.dashboard.entity.UserEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 /**
  * [CORE] 지능형 분석 오케스트레이터
  * 데이터 추출, AI 분석 요청, DB 저장 및 결과 후처리를 총괄합니다.
@@ -31,6 +36,7 @@ public class SmartAnalysisManager {
     private final AnalysisReportRepository reportRepository;
     private final ContractRepository contractRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     /**
      * 전체 분석 프로세스를 관리합니다. (PDF 텍스트 추출 혹은 이미지 직접 분석)
@@ -69,20 +75,34 @@ public class SmartAnalysisManager {
         try {
             log.info("분석 결과를 Analysis_Report 테이블에 저장 중...");
 
-            // 1) 카테고리 매핑 (없으면 생성 - 가이드를 따르지만 안전장치로 유지)
+            // 1) 현재 로그인된 사용자 정보 가져오기
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Long userId = 1L; // 기본값 (폴백)
+
+            if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+                String email = authentication.getName();
+                userId = userRepository.findByEmail(email)
+                        .map(UserEntity::getUserId)
+                        .orElse(1L);
+                log.info("인증된 사용자({})의 ID로 저장합니다.", email);
+            } else {
+                log.warn("인증 정보가 없습니다. 기본 ID(1)로 저장합니다.");
+            }
+
+            // 2) 카테고리 매핑
             String docType = result.getDocumentType() != null ? result.getDocumentType() : "소비자/기타";
             CategoryEntity category = categoryRepository.findByCategoryName(docType)
                     .orElseGet(() -> categoryRepository.save(CategoryEntity.builder().categoryName(docType).build()));
 
-            // 2) 계약(Contract) 레코드 생성
+            // 3) 계약(Contract) 레코드 생성
             ContractsEntity contract = ContractsEntity.builder()
                     .category(category)
-                    .userId(1L) // 테스트용 기본 User ID
-                    .imgUrl("uploaded_file") // 실제 경로 혹은 S3 URL이 들어갈 자리
+                    .userId(userId)
+                    .imgUrl("uploaded_file")
                     .build();
             contractRepository.save(contract);
 
-            // 3) 분석 리포트(AnalysisReport) 저장
+            // 4) 분석 리포트(AnalysisReport) 저장
             AnalysisReportEntity report = AnalysisReportEntity.builder()
                     .contract(contract)
                     .score(result.getRiskScore())
@@ -94,7 +114,6 @@ public class SmartAnalysisManager {
 
         } catch (Exception e) {
             log.error("DB 저장 중 오류 발생 (분석은 계속 진행): {}", e.getMessage());
-            // 분석 흐름을 방해하지 않기 위해 로그만 남김
         }
     }
 

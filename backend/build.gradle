@@ -34,6 +34,11 @@ dependencies {
 	// Apache PDFBox (PDF 텍스트 추출용)
 	implementation 'org.apache.pdfbox:pdfbox:3.0.3'
 	
+	// JJWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
 	// 이미지 압축 (Vision API 용)
 	implementation 'net.coobird:thumbnailator:0.4.20'
 	

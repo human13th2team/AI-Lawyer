@@ -39,25 +39,35 @@ public class AnalysisController {
             }
             log.info("파일 이름: {}, 크기: {}", file.getOriginalFilename(), file.getSize());
             AnalysisResponseDto result = analysisManager.processAnalysis(file);
-            
+
             // 결과가 계약서가 아닌 경우 차단 및 안내
             if (!result.isContract()) {
                 log.warn("업로드된 문서가 계약서가 아님: {}", file.getOriginalFilename());
                 // 비계약서인 경우 기존 컨텍스트도 명확히 초기화하여 챗봇 오염 방지
-                contextManager.clearContext("default"); 
+                contextManager.clearContext("default");
                 return ResponseEntity.badRequest().body(Map.of(
-                    "error", "업로드하신 문서는 법적 계약서 형식이 아닌 것으로 판단됩니다.",
-                    "details", "자소서, 영수증 대신 근로계약서, 임대차계약서 등 실제 계약 문서를 업로드해 주세요."
-                ));
+                        "error", "업로드하신 문서는 법적 계약서 형식이 아닌 것으로 판단됩니다.",
+                        "details", "자소서, 영수증 대신 근로계약서, 임대차계약서 등 실제 계약 문서를 업로드해 주세요."));
             }
-            
+
             // 계약서로 판별된 경우에만 챗봇 컨텍스트에 저장
             contextManager.saveContext("default", result.toString());
-            
+
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             log.error("처리 중 오류 발생", e);
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            String errorMessage = e.getMessage();
+
+            // Google AI API (Gemini) 할당량 초과 처리 (429 에러)
+            if (errorMessage != null && errorMessage.contains("429")) {
+                return ResponseEntity.status(429).body(Map.of(
+                        "error", "현재 AI 서비스 요청이 너무 많습니다 (할당량 초과).",
+                        "details", "Google AI API 무료 티어 제한으로 인해 일시적으로 요청을 처리할 수 없습니다. 약 1분 후 다시 시도해 주세요."));
+            }
+
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "서버 내부 오류가 발생했습니다.",
+                    "details", errorMessage != null ? errorMessage : "알 수 없는 오류"));
         }
     }
 

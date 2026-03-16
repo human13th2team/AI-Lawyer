@@ -23,6 +23,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 	
 	// LangChain4j (Gemini 및 OpenAI 통합 모듈)
 	implementation 'dev.langchain4j:langchain4j:0.36.0'

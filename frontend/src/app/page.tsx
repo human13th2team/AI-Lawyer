@@ -86,7 +86,8 @@ export default function Home() {
         
         <div className="flex items-center gap-8">
           <div className="flex gap-6 text-sm font-medium text-[#4a5568]">
-            <a href="#" className="hover:text-[#2c1a4c]">홈</a>
+            <a href="/" className="text-[#2c1a4c] font-bold">분석하기</a>
+            <a href="/dashboard" className="hover:text-[#2c1a4c]">대시보드</a>
             <a href="#" className="hover:text-[#2c1a4c]">분석 가이드</a>
             <a href="#" className="hover:text-[#2c1a4c]">문의하기</a>
           </div>

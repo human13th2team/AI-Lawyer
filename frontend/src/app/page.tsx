@@ -1,16 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // 챗봇 관련 상태
+  const [chatOpen, setChatOpen] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [userInput, setUserInput] = useState("");
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const [showModal, setShowModal] = useState(false);
-  const [modalContent, setModalContent] = useState({ title: "", description: "" });
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // 데모 데이터 (마감일 포함)
+  const demoData = {
+    "timestamp": new Date().toISOString(),
+    "fileName": "단기기간근로자 계약서_샘플.jpg",
+    "result": {
+      "document_type": "단시간근로자 근로계약서",
+      "risk_score": 15,
+      "deadline_date": "2027-12-31",
+      "summary": "전반적으로 우수한 계약서이나, 지연 작성 등 일부 절차적 개선이 필요합니다. AI 분석을 통해 추출된 예상 마감일은 2027년 12월 31일입니다.",
+      "analysis_items": [
+        {
+          "topic": "근로계약서 지연 작성",
+          "clause": "근로개시일 대비 약 3주 후 작성됨",
+          "is_unfair": true,
+          "explanation": "근로기준법 제17조 위반 소지가 있습니다. 계약서는 업무 시작 전 작성이 원칙입니다.",
+          "legal_base": "근로기준법 제17조",
+          "negotiation_script": "사장님, 다음 계약부터는 업무 시작 첫날에 작성을 부탁드립니다!"
+        }
+      ]
+    }
+  };
+
+  const handleDemo = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setResult(demoData);
+      setLoading(false);
+      setMessages([{ role: "ai", content: "안녕하세요 대표님, 계약서 분석이 완료되었습니다. 추출된 마감일 정보를 확인하신 후 궁금한 점은 질문해 주세요." }]);
+    }, 1200);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -19,187 +56,144 @@ export default function Home() {
     }
   };
 
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userInput.trim()) return;
+    setMessages([...messages, { role: "user", content: userInput }]);
+    setUserInput("");
+    setTimeout(() => {
+      setMessages(prev => [...prev, { role: "ai", content: "현재 데모 모드입니다. 분석 결과를 바탕으로 답변을 준비 중입니다." }]);
+    }, 800);
+  };
+
   const handleUpload = async () => {
-    if (!file) {
-      setError("파일을 선택해주세요.");
-      return;
-    }
-
+    if (!file) return;
     setLoading(true);
-    setError(null);
-    setResult(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("http://localhost:8080/api/analysis/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // 백엔드에서 보낸 에러 메시지가 있을 경우 모달로 표시
-        if (response.status === 400 && data.error) {
-          setModalContent({
-            title: "문서 판별 알림",
-            description: data.error + "\n\n" + (data.details || "")
-          });
-          setShowModal(true);
-          return;
-        }
-        throw new Error(data.message || "서버 응답 오류가 발생했습니다.");
-      }
-
-      setResult(data);
-    } catch (err: any) {
-      setError(err.message || "업로드 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
+    // 실제 API 호출 시뮬레이션
+    setTimeout(handleDemo, 1000);
   };
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] font-sans text-[#2d3748] relative">
-      {/* Custom Alert Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-200">
-            <div className="w-16 h-16 bg-[#fff5f5] rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-[#f56565]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-[#2d3748] text-center mb-2">{modalContent.title}</h3>
-            <p className="text-[#718096] text-center mb-8 whitespace-pre-line leading-relaxed">
-              {modalContent.description}
-            </p>
-            <button
-              onClick={() => setShowModal(false)}
-              className="w-full py-4 bg-[#2c1a4c] text-white rounded-xl font-bold hover:bg-[#3d2666] transition-colors shadow-lg"
-            >
-              확인했습니다
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm">
+      {/* Navigation (Original Design) */}
+      <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm sticky top-0 z-40">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[#2c1a4c] rounded-lg flex items-center justify-center">
             <span className="text-white font-bold">L</span>
           </div>
           <span className="text-xl font-bold tracking-tight text-[#2c1a4c]">AI-Lawyer</span>
         </div>
-        <div className="flex gap-6 text-sm font-medium text-[#4a5568]">
-          <a href="#" className="hover:text-[#2c1a4c]">홈</a>
-          <a href="#" className="hover:text-[#2c1a4c]">분석 가이드</a>
-          <a href="#" className="hover:text-[#2c1a4c]">전문가 연결</a>
+        
+        <div className="flex items-center gap-8">
+          <div className="flex gap-6 text-sm font-medium text-[#4a5568]">
+            <a href="#" className="hover:text-[#2c1a4c]">홈</a>
+            <a href="#" className="hover:text-[#2c1a4c]">분석 가이드</a>
+            <a href="#" className="hover:text-[#2c1a4c]">문의하기</a>
+          </div>
         </div>
       </nav>
 
       <main className="max-w-4xl mx-auto py-16 px-6">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-[#2c1a4c] mb-4 tracking-tight">
-            스마트 계약서 정밀 분석
-          </h1>
-          <p className="text-lg text-[#718096]">
-            AI가 계약서의 숨겨진 위험 조항을 단 몇 초 만에 찾아냅니다.
-          </p>
+          <h1 className="text-4xl font-extrabold text-[#2c1a4c] mb-4 tracking-tight">스마트 계약서 정밀 분석</h1>
+          <p className="text-lg text-[#718096]">AI가 계약서 내용을 꼼꼼히 읽고, 마감일과 리스크를 즉시 찾아냅니다.</p>
         </div>
 
-        {/* Upload Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-[#e2e8f0]">
-          <div className="border-2 border-dashed border-[#cbd5e0] rounded-xl p-12 text-center hover:border-[#2c1a4c] transition-colors group">
-            <input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              onChange={handleFileChange}
-              accept="image/*,application/pdf"
-            />
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <div className="mb-4 flex justify-center">
-                <div className="w-16 h-16 bg-[#f7fafc] rounded-full flex items-center justify-center group-hover:bg-[#ebf4ff] transition-colors">
-                  <svg className="w-8 h-8 text-[#4a5568] group-hover:text-[#2c1a4c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
+          <div className="border-2 border-dashed border-[#cbd5e0] rounded-xl p-12 text-center">
+            <p className="text-lg font-semibold text-[#2d3748] mb-4">분석할 파일을 선택해주세요</p>
+            <div className="flex justify-center gap-4">
+              <button onClick={handleDemo} className="px-10 py-4 bg-[#2c1a4c] text-white rounded-xl font-bold hover:bg-[#3d2666] shadow-lg transition-all">
+                {loading ? "AI 분석 중..." : "데모 분석 시작하기"}
+              </button>
+            </div>
+            <p className="mt-4 text-sm text-gray-400">파일을 업로드하면 실시간 리포트가 생성됩니다.</p>
+          </div>
+        </div>
+
+        {result && (
+          <div className="mt-12 space-y-8 animate-in fade-in duration-500">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#e2e8f0]">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-[#2c1a4c]">{result.result.document_type} 분석 리포트</h2>
+                <div className="flex flex-col items-end gap-1">
+                  <div className="px-4 py-1.5 bg-[#f3f0ff] text-[#2c1a4c] rounded-full font-bold text-sm">안전 점수: {100 - result.result.risk_score}점</div>
+                  <span className="text-xs text-rose-500 font-bold">예상 마감일: {result.result.deadline_date || "미추출"}</span>
                 </div>
               </div>
-              <p className="text-lg font-semibold text-[#2d3748]">
-                {file ? file.name : "계약서 파일을 여기에 드래그하거나 클릭하세요"}
-              </p>
-              <p className="text-sm text-[#a0aec0] mt-2">
-                지원 형식: JPG, PNG, PDF (최대 10MB)
-              </p>
-            </label>
-          </div>
-
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={handleUpload}
-              disabled={loading || !file}
-              className={`px-10 py-4 rounded-xl font-bold text-lg shadow-lg transition-all ${
-                loading || !file
-                  ? "bg-[#cbd5e0] cursor-not-allowed"
-                  : "bg-[#2c1a4c] text-white hover:bg-[#3d2666] hover:-translate-y-1 active:translate-y-0"
-              }`}
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  AI 분석 중...
-                </span>
-              ) : (
-                "계약서 분석 시작하기"
-              )}
-            </button>
-          </div>
-
-          {error && !showModal && (
-            <div className="mt-6 p-4 bg-[#fff5f5] border border-[#feb2b2] rounded-lg text-[#c53030] text-sm text-center">
-              {error}
-            </div>
-          )}
-        </div>
-
-        {/* Result Section (Minimalist) */}
-        {result && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-[#2c1a4c] mb-6 flex items-center gap-2">
-              <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              분석 결과 리포트
-            </h2>
-            <div className="bg-[#1a202c] rounded-2xl p-6 overflow-hidden shadow-2xl">
-              <div className="flex justify-between items-center mb-4 pb-4 border-b border-[#2d3748]">
-                <span className="text-[#a0aec0] text-xs font-mono uppercase tracking-widest">Raw Data Output</span>
-                <button 
-                  onClick={() => setResult(null)}
-                  className="text-[#718096] hover:text-white text-sm"
-                >
-                  닫기
-                </button>
+              
+              <div className="p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500 mb-8">
+                <p className="text-sm text-blue-800 font-bold mb-1">ℹ️ 실시간 분석 안내</p>
+                <p className="text-xs text-blue-700">추출된 마감일 정보는 현재 리포트에만 표시되며 별도로 알림이 예약되지 않습니다.</p>
               </div>
-              <pre className="text-green-400 font-mono text-sm overflow-x-auto p-4 bg-black/30 rounded-lg max-h-[500px]">
-                {JSON.stringify(result, null, 2)}
-              </pre>
+
+              <p className="text-gray-600 leading-relaxed mb-6">{result.result.summary}</p>
+
+              <div className="space-y-6">
+                {result.result.analysis_items.map((item: any, idx: number) => (
+                  <div key={idx} className="p-6 border border-[#e2e8f0] rounded-xl">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className={`w-2 h-2 rounded-full ${item.is_unfair ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
+                      <h4 className="font-bold text-lg">{item.topic}</h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <p className="text-sm font-semibold text-gray-400 uppercase">분석 조항</p>
+                        <p className="text-sm text-gray-700 italic bg-gray-50 p-3 rounded-lg">"{item.clause}"</p>
+                        <p className="text-sm text-gray-600">{item.explanation}</p>
+                        <p className="text-xs font-bold text-[#2c1a4c]">⚖️ 근거: {item.legal_base}</p>
+                      </div>
+                      <div className="bg-[#f0fdf4] p-5 rounded-xl border border-[#dcfce7]">
+                        <p className="text-sm font-bold text-[#166534] mb-2 flex items-center gap-1">
+                          💬 권장 협상 스크립트
+                        </p>
+                        <p className="text-sm text-[#166534] italic">"{item.negotiation_script}"</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="mt-20 py-12 border-t border-[#e2e8f0] text-center text-[#a0aec0] text-sm">
-        <p>© 2026 AI-Lawyer. All rights reserved.</p>
-      </footer>
+      {/* Floating Chatbot */}
+      {result && (
+        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end">
+          {chatOpen && (
+            <div className="w-80 md:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-[#e2e8f0] flex flex-col mb-4 overflow-hidden animate-in slide-in-from-bottom-4">
+              <div className="bg-[#2c1a4c] p-4 text-white flex justify-between items-center">
+                <span className="font-bold text-sm">AI 법률 상담사</span>
+                <button onClick={() => setChatOpen(false)}><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fc]">
+                {messages.map((msg, idx) => (
+                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] p-3 rounded-xl text-sm ${msg.role === 'user' ? 'bg-[#2c1a4c] text-white rounded-tr-none' : 'bg-white text-gray-800 border border-[#e2e8f0] rounded-tl-none'}`}>
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+              <form onSubmit={handleSendMessage} className="p-4 bg-white border-t flex gap-2">
+                <input 
+                  type="text" 
+                  value={userInput} 
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="질문을 입력하세요..." 
+                  className="flex-1 text-sm outline-none border-b focus:border-[#2c1a4c] py-1"
+                />
+                <button type="submit" className="text-[#2c1a4c]"><svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
+              </form>
+            </div>
+          )}
+          <button onClick={() => setChatOpen(!chatOpen)} className="w-14 h-14 bg-[#2c1a4c] text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

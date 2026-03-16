@@ -43,17 +43,24 @@ public class AnalysisController {
             // 결과가 계약서가 아닌 경우 차단 및 안내
             if (!result.isContract()) {
                 log.warn("업로드된 문서가 계약서가 아님: {}", file.getOriginalFilename());
-                // 비계약서인 경우 기존 컨텍스트도 명확히 초기화하여 챗봇 오염 방지
                 contextManager.clearContext("default");
                 return ResponseEntity.badRequest().body(Map.of(
                         "error", "업로드하신 문서는 법적 계약서 형식이 아닌 것으로 판단됩니다.",
-                        "details", "자소서, 영수증 대신 근로계약서, 임대차계약서 등 실제 계약 문서를 업로드해 주세요."));
+                        "details", "근로계약서, 임대차계약서 등 실제 계약 문서를 업로드해 주세요."));
             }
 
-            // 계약서로 판별된 경우에만 챗봇 컨텍스트에 저장
+            // 계약서로 판별된 경우 컨텍스트 저장
             contextManager.saveContext("default", result.toString());
 
-            return ResponseEntity.ok(result);
+            // [대표님 요청 사항] 최종 JSON 응답 레이아웃 구성
+            Map<String, Object> finalResponse = Map.of(
+                    "timestamp", java.time.ZonedDateTime.now().toString(),
+                    "fileName", file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown",
+                    "fileType", file.getContentType() != null ? file.getContentType() : "application/octet-stream",
+                    "result", result
+            );
+
+            return ResponseEntity.ok(finalResponse);
         } catch (Exception e) {
             log.error("처리 중 오류 발생", e);
             String errorMessage = e.getMessage();

@@ -1,7 +1,7 @@
 package com.ailawyer.backend.config;
 
 import com.ailawyer.backend.ai.domain.Category;
-import com.ailawyer.backend.ai.repository.CategoryRepository;
+import com.ailawyer.backend.ai.repository.AiCategoryRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class DataInitializer {
 
 //    @Bean
-//    public CommandLineRunner initData(CategoryRepository categoryRepository) {
+//    public CommandLineRunner initData(AiCategoryRepository categoryRepository) {
 //        return args -> {
 //            String[] initialCategories = {"근로계약서", "부동산계약서", "용역계약서", "비밀유지계약서"};
 //            for (String catName : initialCategories) {

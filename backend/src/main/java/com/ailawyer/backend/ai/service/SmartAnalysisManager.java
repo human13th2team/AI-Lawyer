@@ -1,14 +1,22 @@
 package com.ailawyer.backend.ai.service;
 
 import com.ailawyer.backend.ai.dto.AnalysisResponseDto;
+import com.ailawyer.backend.ai.repository.AiAnalysisReportRepository;
+import com.ailawyer.backend.ai.repository.AiCategoryRepository;
+import com.ailawyer.backend.ai.repository.AiContractRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * [CORE] 지능형 분석 오케스트레이터
+ * 데이터 추출, AI 분석 요청, DB 저장 및 결과 후처리를 총괄합니다.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -17,10 +25,10 @@ public class SmartAnalysisManager {
     private final DocumentParser documentParser;
     private final AiAnalysisService aiAnalysisService;
 
-    // DB 저장을 위한 레포지토리 주입
-    private final com.ailawyer.backend.ai.repository.AnalysisReportRepository reportRepository;
-    private final com.ailawyer.backend.ai.repository.ContractRepository contractRepository;
-    private final com.ailawyer.backend.ai.repository.CategoryRepository categoryRepository;
+    // DB 저장을 위한 레포지토리 주입 (AI 전용)
+    private final AiAnalysisReportRepository reportRepository;
+    private final AiContractRepository contractRepository;
+    private final AiCategoryRepository categoryRepository;
 
     /**
      * 전체 분석 프로세스를 관리합니다. (PDF 텍스트 추출 혹은 이미지 직접 분석)

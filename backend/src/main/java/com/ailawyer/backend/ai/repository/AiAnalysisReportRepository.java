@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AnalysisReportRepository extends JpaRepository<AnalysisReport, Long> {
+public interface AiAnalysisReportRepository extends JpaRepository<AnalysisReport, Long> {
     Optional<AnalysisReport> findByContract(Contract contract);
 }

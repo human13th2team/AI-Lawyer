@@ -26,6 +26,7 @@ export function DailyCategoryTrendChart() {
           const json = await res.json()
           if (json && json.length > 0) {
             setData(json)
+            return
           }
         }
         setData([])

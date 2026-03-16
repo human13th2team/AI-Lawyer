@@ -1,6 +1,6 @@
 package com.ailawyer.backend.dashboard.service;
 
-import com.ailawyer.backend.dashboard.dto.CategoryContractDto;
+import com.ailawyer.backend.dashboard.projection.CategoryContractProjection;
 import com.ailawyer.backend.dashboard.projection.RiskAvgProjection;
 import com.ailawyer.backend.dashboard.projection.TopCategoryProjection;
 import com.ailawyer.backend.dashboard.repository.AnalysisReportRepository;
@@ -29,11 +29,11 @@ public class AnalysisReportService {
         return repository.findRiskAverages();
     }
 
-    public Integer getCountContractId() {
+    public Long getCountContractId() {
         return repository.findCountContractId();
     }
 
-    public List<CategoryContractDto> getContractCountByCategory() {
+    public List<CategoryContractProjection> getContractCountByCategory() {
         return repository.findContractCountByCategory();
     }
 

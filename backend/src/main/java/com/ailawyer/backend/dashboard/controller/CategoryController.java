@@ -1,7 +1,7 @@
 package com.ailawyer.backend.dashboard.controller;
 
 import com.ailawyer.backend.dashboard.service.CategoryService;
-import com.ailawyer.backend.dashboard.dto.CategoryScoreDto;
+import com.ailawyer.backend.dashboard.projection.CategoryScoreProjection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,13 +16,14 @@ import lombok.RequiredArgsConstructor;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    
     @GetMapping("{category_id}/contracts")
-    public ResponseEntity<Long> getContractCount(@PathVariable Integer category_id) {
+    public ResponseEntity<Long> getContractCount(@PathVariable("category_id") Long category_id) {
         return ResponseEntity.ok(categoryService.getContractCount(category_id));
     }
 
     @GetMapping("{category_id}/overall")
-    public ResponseEntity<CategoryScoreDto> getAvgScoreByCategory(@PathVariable Integer category_id) {
+    public ResponseEntity<CategoryScoreProjection> getAvgScoreByCategory(@PathVariable("category_id") Long category_id) {
         return ResponseEntity.ok(categoryService.getFindAvgScoreByCategoryId(category_id));
     }
 }

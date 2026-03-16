@@ -10,12 +10,12 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "Contracts")
+@Table(name = "\"Contracts\"")
 public class ContractsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "contract_id")
-    private Integer contractId;
+    private Long contractId;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
@@ -28,5 +28,5 @@ public class ContractsEntity {
     private CategoryEntity category;
 
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
 }

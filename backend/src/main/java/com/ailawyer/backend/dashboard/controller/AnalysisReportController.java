@@ -1,9 +1,10 @@
 package com.ailawyer.backend.dashboard.controller;
 
-import com.ailawyer.backend.dashboard.dto.CategoryContractDto;
+import com.ailawyer.backend.dashboard.projection.CategoryContractProjection;
 import com.ailawyer.backend.dashboard.projection.RiskAvgProjection;
 import com.ailawyer.backend.dashboard.projection.TopCategoryProjection;
 import com.ailawyer.backend.dashboard.service.AnalysisReportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,29 +16,27 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dashboard")
+@RequiredArgsConstructor
 public class AnalysisReportController {
 
     private final AnalysisReportService service;
 
-    public AnalysisReportController(AnalysisReportService service) {
-        this.service = service;
-    }
-    // risk_score, disadvantage_percent 각 평균 2개 취합
-    @GetMapping("averages/overall")
+    // risk_score, disadvantagepercent 평균
+    @GetMapping("/averages/overall")
     public ResponseEntity<RiskAvgProjection> getRiskAverages() {
         RiskAvgProjection result = service.getRiskAverages();
         return ResponseEntity.ok(result);
     }
     // 지금까지 분석한 걔약서 수가 몇개인가 - count(contract_id)
     @GetMapping("contracts/overall")
-    public ResponseEntity<Integer> getCountContractId() {
-        Integer result = service.getCountContractId();
+    public ResponseEntity<Long> getCountContractId() {
+        Long result = service.getCountContractId();
         return ResponseEntity.ok(result);
     }
     // 카테고리별 계약서가 몇개인가 - count(contract_id) + groupby contract_id
     @GetMapping("contracts/category")
-    public ResponseEntity<List<CategoryContractDto>> getContractCountByCategory() {
-        List<CategoryContractDto> result = service.getContractCountByCategory();
+    public ResponseEntity<List<CategoryContractProjection>> getContractCountByCategory() {
+        List<CategoryContractProjection> result = service.getContractCountByCategory();
         return ResponseEntity.ok(result);
     }
     // 위험도 top-5 카테고리 가져오기

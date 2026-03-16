@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "analysis_report")
+@Table(name = "\"Analysis_Report\"")
 public class AnalysisReportEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
-    private Integer reportId;
+    private Long reportId;
 
     @ManyToOne
     @JoinColumn(name = "contract_id")

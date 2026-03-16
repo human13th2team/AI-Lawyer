@@ -1,24 +1,23 @@
 package com.ailawyer.backend.dashboard.repository;
 
-import com.ailawyer.backend.dashboard.dto.CategoryLatestRiskDto;
 import com.ailawyer.backend.dashboard.entity.RiskClauseEntity;
+import com.ailawyer.backend.dashboard.projection.CategoryLatestRiskProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface RiskClauseRepository extends JpaRepository<RiskClauseEntity, Integer> {
-    @Query("""
-        SELECT new com.ailawyer.backend.dashboard.dto.CategoryLatestRiskDto(
-            r.riskTitle,
-            r.legalBase
-        )
-        FROM RiskClauseEntity r
-        JOIN ContractsEntity c ON r.contractId = c.contractId
-        WHERE c.category.categoryId = :categoryId
-        ORDER BY r.riskClauseId DESC
+public interface RiskClauseRepository extends JpaRepository<RiskClauseEntity, Long> {
+    
+    @Query(value = """
+        SELECT r.risk_title AS riskTitle, 
+               r.legal_base AS legalBase 
+        FROM \"Risk_Clause\" r 
+        JOIN \"Contracts\" c ON r.contract_id = c.contract_id 
+        WHERE c.category_id = :categoryId 
+        ORDER BY r.risk_clause_id DESC 
         LIMIT 3
-    """)
-    List<CategoryLatestRiskDto> findLatestRisksByCategoryId(@Param("categoryId") Integer categoryId);
+    """, nativeQuery = true)
+    List<CategoryLatestRiskProjection> findLatestRisksByCategoryId(@Param("categoryId") Long categoryId);
 }

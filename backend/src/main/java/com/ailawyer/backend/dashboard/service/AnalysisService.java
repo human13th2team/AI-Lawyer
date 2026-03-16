@@ -42,7 +42,7 @@ public class AnalysisService {
                         .createdAt(OffsetDateTime.parse(dto.getTimestamp()))
                         .imgUrl(dto.getFileName())
                         .category(category)
-                        .userId(1)
+                        .userId(1L)
                         .build()
         );
 

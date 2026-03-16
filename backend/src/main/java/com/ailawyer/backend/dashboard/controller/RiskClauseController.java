@@ -1,6 +1,6 @@
 package com.ailawyer.backend.dashboard.controller;
 
-import com.ailawyer.backend.dashboard.dto.CategoryLatestRiskDto;
+import com.ailawyer.backend.dashboard.projection.CategoryLatestRiskProjection;
 import com.ailawyer.backend.dashboard.service.RiskClauseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class RiskClauseController {
     private final RiskClauseService riskClauseService;
 
     @GetMapping("{categoryId}/risks-clauses")
-    public ResponseEntity<List<CategoryLatestRiskDto>> getLatestRisks(
-            @PathVariable Integer categoryId) {
+    public ResponseEntity<List<CategoryLatestRiskProjection>> getLatestRisks(
+            @PathVariable("categoryId") Long categoryId) {
         return ResponseEntity.ok(riskClauseService.getLatestRisks(categoryId));
     }
 }

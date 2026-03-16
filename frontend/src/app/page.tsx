@@ -1,12 +1,28 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { 
+  FileUp, 
+  FolderUp, 
+  Sparkles, 
+  Monitor, 
+  History, 
+  Settings as SettingsIcon,
+  Search,
+  CheckCircle,
+  Clock,
+  MessageSquare,
+  X,
+  ChevronRight
+} from "lucide-react";
+import { AnalysisResultView } from "./analysis/AnalysisResultView";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState(false);
   
   // 챗봇 관련 상태
   const [chatOpen, setChatOpen] = useState(false);
@@ -18,7 +34,7 @@ export default function Home() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 데모 데이터 (마감일 포함)
+  // 데모 데이터
   const demoData = {
     "timestamp": new Date().toISOString(),
     "fileName": "단기기간근로자 계약서_샘플.jpg",
@@ -26,15 +42,23 @@ export default function Home() {
       "document_type": "단시간근로자 근로계약서",
       "risk_score": 15,
       "deadline_date": "2027-12-31",
-      "summary": "전반적으로 우수한 계약서이나, 지연 작성 등 일부 절차적 개선이 필요합니다. AI 분석을 통해 추출된 예상 마감일은 2027년 12월 31일입니다.",
+      "summary": "본 계약서는 근로기준법을 준수하며 작성되었으나, 마감일 관리 및 일부 특약 조항에서 협상의 여지가 발견되었습니다. AI가 추출한 핵심 일정을 확인해 보세요.",
       "analysis_items": [
         {
-          "topic": "근로계약서 지연 작성",
-          "clause": "근로개시일 대비 약 3주 후 작성됨",
+          "topic": "계약 갱신 및 마감일",
+          "clause": "본 계약은 2027년 12월 31일부로 종료되며 자동 갱신되지 않는다.",
+          "is_unfair": false,
+          "explanation": "마감일이 명확히 명시되어 있어 기한 관리에 용이합니다. 다만, 갱신 의사가 있을 경우 1개월 전 서면 통보 절차를 추가하는 것이 안전합니다.",
+          "legal_base": "민법 제660조 (기간의 약정이 없는 고용의 해지통고)",
+          "negotiation_script": "대표님, 계약 만료 30일 전에 상호 합의 하에 연장 여부를 검토한다는 조항을 넣는 것은 어떨까요?"
+        },
+        {
+          "topic": "근로 시간 외 수당",
+          "clause": "연장 근로 시 별도의 수당 없이 포괄임금제에 포함된 것으로 간주한다.",
           "is_unfair": true,
-          "explanation": "근로기준법 제17조 위반 소지가 있습니다. 계약서는 업무 시작 전 작성이 원칙입니다.",
-          "legal_base": "근로기준법 제17조",
-          "negotiation_script": "사장님, 다음 계약부터는 업무 시작 첫날에 작성을 부탁드립니다!"
+          "explanation": "포괄임금제 적용 요건이 불분명할 경우 향후 분쟁의 소지가 큽니다. 실제 근로시간을 산정하기 어려운 경우인지 재검토가 필요합니다.",
+          "legal_base": "근로기준법 제56조 (연장·야간 및 휴일 근로)",
+          "negotiation_script": "해당 조항은 실제 연장 근로 시 법적 리스크가 있을 수 있으니, 구체적인 산정 방식을 명시해 달라고 요청해 보세요."
         }
       ]
     }
@@ -44,16 +68,10 @@ export default function Home() {
     setLoading(true);
     setTimeout(() => {
       setResult(demoData);
+      setShowResult(true);
       setLoading(false);
-      setMessages([{ role: "ai", content: "안녕하세요 대표님, 계약서 분석이 완료되었습니다. 추출된 마감일 정보를 확인하신 후 궁금한 점은 질문해 주세요." }]);
-    }, 1200);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setError(null);
-    }
+      setMessages([{ role: "ai", content: "안녕하세요 대표님, 계약서 분석이 완료되었습니다. 별도의 창으로 리포트를 띄워드렸습니다. 확인 후 궁금한 점은 언제든 말씀해 주세요!" }]);
+    }, 1500);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -62,136 +80,173 @@ export default function Home() {
     setMessages([...messages, { role: "user", content: userInput }]);
     setUserInput("");
     setTimeout(() => {
-      setMessages(prev => [...prev, { role: "ai", content: "현재 데모 모드입니다. 분석 결과를 바탕으로 답변을 준비 중입니다." }]);
+      setMessages(prev => [...prev, { role: "ai", content: "현재 분석된 내용을 바탕으로 대표님께 최적의 답변을 준비 중입니다." }]);
     }, 800);
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-    setLoading(true);
-    // 실제 API 호출 시뮬레이션
-    setTimeout(handleDemo, 1000);
-  };
-
   return (
-    <div className="min-h-screen bg-[#f8f9fc] font-sans text-[#2d3748] relative">
-      {/* Navigation (Original Design) */}
-      <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm sticky top-0 z-40">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#2c1a4c] rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">L</span>
+    <div className="min-h-screen bg-[#F6F8FF] font-sans text-slate-800 selection:bg-indigo-100">
+      
+      {/* Dynamic Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex items-center justify-between px-10 py-5 bg-white/70 backdrop-blur-md sticky top-0 z-40 border-b border-white/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-indigo-600 rounded-[14px] flex items-center justify-center shadow-indigo-100 shadow-xl rotate-3">
+            <Sparkles className="text-white w-5 h-5 fill-white/20" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-[#2c1a4c]">AI-Lawyer</span>
+          <span className="text-2xl font-black tracking-tight text-[#1E1B4B]">AI-Lawyer <span className="text-indigo-600">.</span></span>
         </div>
         
-        <div className="flex items-center gap-8">
-          <div className="flex gap-6 text-sm font-medium text-[#4a5568]">
-            <a href="/" className="text-[#2c1a4c] font-bold">분석하기</a>
-            <a href="/dashboard" className="hover:text-[#2c1a4c]">대시보드</a>
-            <a href="#" className="hover:text-[#2c1a4c]">분석 가이드</a>
-            <a href="#" className="hover:text-[#2c1a4c]">문의하기</a>
+        <div className="flex items-center gap-10">
+          <div className="hidden md:flex gap-8 text-[13px] font-bold text-slate-500 uppercase tracking-widest">
+            <a href="/" className="text-indigo-600 border-b-2 border-indigo-600 pb-1">분석하기</a>
+            <a href="/dashboard" className="hover:text-indigo-600 transition-colors">대시보드</a>
+            <a href="#" className="hover:text-indigo-600 transition-colors">가이드라인</a>
           </div>
+          <button className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
+            <SettingsIcon className="w-4 h-4 text-slate-500" />
+          </button>
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto py-16 px-6">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-[#2c1a4c] mb-4 tracking-tight">스마트 계약서 정밀 분석</h1>
-          <p className="text-lg text-[#718096]">AI가 계약서 내용을 꼼꼼히 읽고, 마감일과 리스크를 즉시 찾아냅니다.</p>
+      <main className="max-w-6xl mx-auto py-20 px-6 relative z-10 text-center">
+        
+        <div className="space-y-6 mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-[11px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2">
+            <CheckCircle className="w-3 h-3" /> 2024년 최신 판례 데이터 업데이트 완료
+          </div>
+          <h1 className="text-6xl font-black text-[#1E1B4B] tracking-tight leading-[1.1]">
+            계약서 리스크를 <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500">단 3초 만에</span> 해결하세요
+          </h1>
+          <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
+            AI 검사가 복잡한 법률 용어를 해석하고, 숨겨진 리스크와 마감일을 <br />
+            정밀하게 추출하여 완벽한 협상 가이드를 제공합니다.
+          </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-[#e2e8f0]">
-          <div className="border-2 border-dashed border-[#cbd5e0] rounded-xl p-12 text-center">
-            <p className="text-lg font-semibold text-[#2d3748] mb-4">분석할 파일을 선택해주세요</p>
-            <div className="flex justify-center gap-4">
-              <button onClick={handleDemo} className="px-10 py-4 bg-[#2c1a4c] text-white rounded-xl font-bold hover:bg-[#3d2666] shadow-lg transition-all">
-                {loading ? "AI 분석 중..." : "데모 분석 시작하기"}
-              </button>
-            </div>
-            <p className="mt-4 text-sm text-gray-400">파일을 업로드하면 실시간 리포트가 생성됩니다.</p>
+        {/* Upload Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 max-w-4xl mx-auto">
+          <div className="bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(31,38,135,0.08)] p-4 border border-white relative group">
+             <div className="border-2 border-dashed border-slate-100 rounded-[32px] p-20 flex flex-col items-center justify-center transition-all group-hover:border-indigo-200 group-hover:bg-slate-50/50">
+               <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
+                 <FileUp className="text-indigo-600 w-10 h-10" />
+               </div>
+               
+               <h3 className="text-2xl font-black text-slate-800 mb-2">계약서 파일이나 폴더를 올려주세요</h3>
+               <p className="text-slate-400 font-medium mb-10">PDF, JPG, PNG 파일 및 디렉토리 업로드를 지원합니다.</p>
+
+               <div className="flex flex-wrap justify-center gap-4">
+                 <button 
+                   onClick={handleDemo}
+                   disabled={loading}
+                   className="flex items-center gap-3 px-10 py-5 bg-[#1E1B4B] text-white rounded-2xl font-black text-lg shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 hover:shadow-indigo-300 active:scale-95 disabled:opacity-50"
+                 >
+                   {loading ? (
+                     <span className="flex items-center gap-3">
+                       <Clock className="w-6 h-6 animate-spin" /> 분석 중...
+                     </span>
+                   ) : (
+                     <span className="flex items-center gap-3">
+                       <Monitor className="w-6 h-6" /> 데모 분석 시작하기
+                     </span>
+                   )}
+                 </button>
+                 
+                 <button className="flex items-center gap-3 px-10 py-5 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-lg hover:border-indigo-100 hover:text-indigo-600 transition-all">
+                   <FolderUp className="w-6 h-6" /> 폴더 업로드
+                 </button>
+               </div>
+             </div>
           </div>
         </div>
 
-        {result && (
-          <div className="mt-12 space-y-8 animate-in fade-in duration-500">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#e2e8f0]">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[#2c1a4c]">{result.result.document_type} 분석 리포트</h2>
-                <div className="flex flex-col items-end gap-1">
-                  <div className="px-4 py-1.5 bg-[#f3f0ff] text-[#2c1a4c] rounded-full font-bold text-sm">안전 점수: {100 - result.result.risk_score}점</div>
-                  <span className="text-xs text-rose-500 font-bold">예상 마감일: {result.result.deadline_date || "미추출"}</span>
-                </div>
+        {/* Feature Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24">
+          {[
+            { icon: Search, title: "정밀 조항 검출", desc: "독소 조항 및 불리한 조건을 AI가 즉시 감지합니다." },
+            { icon: History, title: "마감일 알림", desc: "계약 종료 및 갱신일을 추출하여 스케줄을 관리합니다." },
+            { icon: MessageSquare, title: "실시간 상담", desc: "분석 결과를 기반으로 최적의 협상안을 제시합니다." }
+          ].map((item, i) => (
+            <div key={i} className="text-left p-8 bg-white/50 rounded-3xl border border-white/50 hover:bg-white transition-all shadow-sm">
+              <div className="w-12 h-12 bg-white shadow-md rounded-xl flex items-center justify-center mb-6">
+                <item.icon className="w-6 h-6 text-indigo-600" />
               </div>
-              
-              <div className="p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500 mb-8">
-                <p className="text-sm text-blue-800 font-bold mb-1">ℹ️ 실시간 분석 안내</p>
-                <p className="text-xs text-blue-700">추출된 마감일 정보는 현재 리포트에만 표시되며 별도로 알림이 예약되지 않습니다.</p>
-              </div>
-
-              <p className="text-gray-600 leading-relaxed mb-6">{result.result.summary}</p>
-
-              <div className="space-y-6">
-                {result.result.analysis_items.map((item: any, idx: number) => (
-                  <div key={idx} className="p-6 border border-[#e2e8f0] rounded-xl">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className={`w-2 h-2 rounded-full ${item.is_unfair ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
-                      <h4 className="font-bold text-lg">{item.topic}</h4>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <p className="text-sm font-semibold text-gray-400 uppercase">분석 조항</p>
-                        <p className="text-sm text-gray-700 italic bg-gray-50 p-3 rounded-lg">"{item.clause}"</p>
-                        <p className="text-sm text-gray-600">{item.explanation}</p>
-                        <p className="text-xs font-bold text-[#2c1a4c]">⚖️ 근거: {item.legal_base}</p>
-                      </div>
-                      <div className="bg-[#f0fdf4] p-5 rounded-xl border border-[#dcfce7]">
-                        <p className="text-sm font-bold text-[#166534] mb-2 flex items-center gap-1">
-                          💬 권장 협상 스크립트
-                        </p>
-                        <p className="text-sm text-[#166534] italic">"{item.negotiation_script}"</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h4 className="text-lg font-bold text-slate-800 mb-2">{item.title}</h4>
+              <p className="text-sm text-slate-500 font-medium leading-relaxed">{item.desc}</p>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
       </main>
+
+      {/* Analysis Result "Separate Window" (Modal Overlay) */}
+      {showResult && result && (
+        <AnalysisResultView 
+          result={result} 
+          onClose={() => setShowResult(false)} 
+          onOpenChat={() => {
+            setShowResult(false);
+            setChatOpen(true);
+          }}
+        />
+      )}
 
       {/* Floating Chatbot */}
       {result && (
-        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end">
+        <div className="fixed bottom-10 right-10 z-50 flex flex-col items-end">
           {chatOpen && (
-            <div className="w-80 md:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-[#e2e8f0] flex flex-col mb-4 overflow-hidden animate-in slide-in-from-bottom-4">
-              <div className="bg-[#2c1a4c] p-4 text-white flex justify-between items-center">
-                <span className="font-bold text-sm">AI 법률 상담사</span>
-                <button onClick={() => setChatOpen(false)}><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" /></svg></button>
+            <div className="w-[400px] h-[600px] bg-white rounded-[32px] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] border border-slate-100 flex flex-col mb-6 overflow-hidden animate-in slide-in-from-bottom-6 duration-500">
+              <div className="bg-[#1E1B4B] p-6 text-white flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-black text-sm">AI 리걸 컨설턴트</p>
+                    <p className="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">Online · Hyper-personalized</p>
+                  </div>
+                </div>
+                <button onClick={() => setChatOpen(false)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fc]">
+              
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] p-3 rounded-xl text-sm ${msg.role === 'user' ? 'bg-[#2c1a4c] text-white rounded-tr-none' : 'bg-white text-gray-800 border border-[#e2e8f0] rounded-tl-none'}`}>
+                    <div className={`max-w-[85%] p-4 rounded-2xl text-[13px] font-medium leading-relaxed ${msg.role === 'user' ? 'bg-[#1E1B4B] text-white rounded-tr-none shadow-lg' : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none shadow-sm'}`}>
                       {msg.content}
                     </div>
                   </div>
                 ))}
                 <div ref={chatEndRef} />
               </div>
-              <form onSubmit={handleSendMessage} className="p-4 bg-white border-t flex gap-2">
+              
+              <form onSubmit={handleSendMessage} className="p-6 bg-white border-t border-slate-100 flex gap-3">
                 <input 
                   type="text" 
                   value={userInput} 
                   onChange={(e) => setUserInput(e.target.value)}
-                  placeholder="질문을 입력하세요..." 
-                  className="flex-1 text-sm outline-none border-b focus:border-[#2c1a4c] py-1"
+                  placeholder="추가로 궁금한 점이 있으신가요?" 
+                  className="flex-1 text-sm outline-none border-none bg-slate-100 px-5 py-3 rounded-xl focus:ring-2 focus:ring-indigo-100 transition-all font-medium"
                 />
-                <button type="submit" className="text-[#2c1a4c]"><svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
+                <button type="submit" className="w-11 h-11 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                  <ChevronRight className="w-5 h-5" />
+                </button>
               </form>
             </div>
           )}
-          <button onClick={() => setChatOpen(!chatOpen)} className="w-14 h-14 bg-[#2c1a4c] text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+          
+          <button 
+            onClick={() => setChatOpen(!chatOpen)} 
+            className={`w-16 h-16 rounded-[22px] shadow-2xl flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 ${chatOpen ? 'bg-rose-500 rotate-90 shadow-rose-200' : 'bg-[#1E1B4B] shadow-indigo-200'}`}
+          >
+            {chatOpen ? <X className="text-white w-7 h-7" /> : <MessageSquare className="text-white w-7 h-7 fill-white/10" />}
           </button>
         </div>
       )}

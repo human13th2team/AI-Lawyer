@@ -4,6 +4,7 @@ import com.ailawyer.backend.dashboard.dto.CategoryContractDto;
 import com.ailawyer.backend.dashboard.projection.RiskAvgProjection;
 import com.ailawyer.backend.dashboard.projection.TopCategoryProjection;
 import com.ailawyer.backend.dashboard.repository.AnalysisReportRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -72,4 +73,5 @@ public class AnalysisReportService {
         
         return new ArrayList<>(grouped.values());
     }
+
 }

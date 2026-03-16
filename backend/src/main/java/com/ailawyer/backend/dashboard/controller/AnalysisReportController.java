@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("dashboard")
+@RequestMapping("/api/dashboard")
 public class AnalysisReportController {
 
     private final AnalysisReportService service;

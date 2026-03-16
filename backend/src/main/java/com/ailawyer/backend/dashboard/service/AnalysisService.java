@@ -4,7 +4,7 @@ import com.ailawyer.backend.dashboard.dto.AnalysisItemDto;
 import com.ailawyer.backend.dashboard.dto.AnalysisRequestDto;
 import com.ailawyer.backend.dashboard.entity.AnalysisReportEntity;
 import com.ailawyer.backend.dashboard.entity.CategoryEntity;
-import com.ailawyer.backend.dashboard.entity.ContractEntity;
+import com.ailawyer.backend.dashboard.entity.ContractsEntity;
 import com.ailawyer.backend.dashboard.entity.RiskClauseEntity;
 import com.ailawyer.backend.dashboard.repository.AnalysisReportRepository;
 import com.ailawyer.backend.dashboard.repository.CategoryRepository;
@@ -37,8 +37,8 @@ public class AnalysisService {
                 ));
 
         // 2. contract 저장 → contract_id 발급
-        ContractEntity contract = contractRepository.save(
-                ContractEntity.builder()
+        ContractsEntity contract = contractRepository.save(
+                ContractsEntity.builder()
                         .createdAt(OffsetDateTime.parse(dto.getTimestamp()))
                         .imgUrl(dto.getFileName())
                         .category(category)

@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Data
 @Entity
 @Table(name = "Contracts")
-public class ContractEntity {
+public class ContractsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "contract_id")

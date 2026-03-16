@@ -20,7 +20,7 @@ public class AnalysisReportEntity {
 
     @ManyToOne
     @JoinColumn(name = "contract_id")
-    private ContractEntity contract;
+    private ContractsEntity contract;
 
     @Column(name = "score")
     private Integer score;

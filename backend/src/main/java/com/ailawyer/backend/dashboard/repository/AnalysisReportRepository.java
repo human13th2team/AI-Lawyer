@@ -35,7 +35,8 @@ public interface AnalysisReportRepository extends JpaRepository<AnalysisReportEn
 
     // 가장 위험도가 높은 top-k개  카테고리 정보
     @Query(value =
-            "SELECT cat.category_name AS categoryName, " +
+            "SELECT cat.category_id AS categoryId, " +
+            "cat.category_name AS categoryName, " +
             "AVG(ar.score) AS avgRiskScore, " +
             "AVG(ar.penalty_score) AS avgDisadvantagePercent, " +
             "COUNT(rc.risk_clause_id) AS riskClauseCount " +

@@ -46,8 +46,7 @@ export default function DashboardPage() {
         if (averagesRes) {
           setAverages(parseAverages(averagesRes))
         } else {
-          // Dev mock fallback if API is not implemented
-          setAverages({ riskScore: 75, disadvantagePercent: 45 })
+          setAverages({ riskScore: 0, disadvantagePercent: 0 })
         }
 
         if (contractsRes) {
@@ -55,14 +54,12 @@ export default function DashboardPage() {
           const count = typeof contractsRes === "number" ? contractsRes : (contractsRes.count ?? contractsRes.total ?? 0)
           setContractCount(count)
         } else {
-          // Dev mock fallback
-          setContractCount(1284)
+          setContractCount(0)
         }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error)
-        // Set Mock Data if error
-        setAverages({ riskScore: 75, disadvantagePercent: 45 })
-        setContractCount(1284)
+        setAverages({ riskScore: 0, disadvantagePercent: 0 })
+        setContractCount(0)
       } finally {
         setLoading(false)
       }

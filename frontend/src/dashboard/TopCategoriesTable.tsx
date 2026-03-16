@@ -6,20 +6,15 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { MoreHorizontal, Settings, AlertTriangle } from "lucide-react"
 
 interface TopCategoryData {
+  categoryId: number
   categoryName: string
   avgRiskScore: number
   avgDisadvantagePercent: number
   riskClauseCount: number
+  latestRiskTitle?: string
+  latestLegalBase?: string
 }
 
-// Fallback Mock Data in case the backend API fails or is empty
-const mockData: TopCategoryData[] = [
-  { categoryName: "Master Service Agreement", avgRiskScore: 82.5, avgDisadvantagePercent: 65.0, riskClauseCount: 14 },
-  { categoryName: "Non-Disclosure Agreement", avgRiskScore: 78.0, avgDisadvantagePercent: 55.2, riskClauseCount: 8 },
-  { categoryName: "Employment Contract", avgRiskScore: 65.4, avgDisadvantagePercent: 42.1, riskClauseCount: 12 },
-  { categoryName: "Vendor Agreement", avgRiskScore: 59.9, avgDisadvantagePercent: 38.5, riskClauseCount: 5 },
-  { categoryName: "Software License", avgRiskScore: 52.1, avgDisadvantagePercent: 29.0, riskClauseCount: 3 },
-]
 
 export function TopCategoriesTable() {
   const [data, setData] = useState<TopCategoryData[]>([])
@@ -30,16 +25,35 @@ export function TopCategoriesTable() {
       try {
         const res = await fetch("/api/dashboard/categories/top?limit=5")
         if (res.ok) {
-          const json = await res.json()
+          const json: TopCategoryData[] = await res.json()
           if (json && json.length > 0) {
-            setData(json)
+            // Fetch latest risks for each category
+            const withRisks = await Promise.all(json.map(async (cat) => {
+              if (!cat.categoryId) return cat
+              try {
+                const riskRes = await fetch(`/api/dashboard/${cat.categoryId}/risks-clauses`)
+                if (riskRes.ok) {
+                  const risks = await riskRes.json()
+                  if (risks && risks.length > 0) {
+                    return {
+                      ...cat,
+                      latestRiskTitle: risks[0].riskTitle,
+                      latestLegalBase: risks[0].legalBase
+                    }
+                  }
+                }
+              } catch(e) {}
+              return cat
+            }))
+            setData(withRisks)
             return
           }
         }
-        setData(mockData) // Fallback to mock data if empty
+        // Fallback to empty if empty
+        setData([])
       } catch (error) {
-        console.error("Failed to load top categories, using mock data", error)
-        setData(mockData)
+        console.error("Failed to load top categories", error)
+        setData([])
       } finally {
         setLoading(false)
       }
@@ -63,7 +77,7 @@ export function TopCategoriesTable() {
                 <th scope="col" className="px-6 py-4 tracking-wider">카테고리명</th>
                 <th scope="col" className="px-6 py-4 tracking-wider text-center">평균 위험도</th>
                 <th scope="col" className="px-6 py-4 tracking-wider text-center">불리함 비율</th>
-                <th scope="col" className="px-6 py-4 tracking-wider text-center">위험 조항 수</th>
+                <th scope="col" className="px-6 py-4 tracking-wider text-center">최신 위험 조항 예시</th>
               </tr>
             </thead>
             <tbody>
@@ -71,6 +85,12 @@ export function TopCategoriesTable() {
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center text-[#7d7b90] font-medium">
                     데이터를 불러오는 중입니다...
+                  </td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400 font-medium">
+                    분석된 데이터가 없습니다. 새로운 계약서를 등록해주세요.
                   </td>
                 </tr>
               ) : (
@@ -81,7 +101,7 @@ export function TopCategoriesTable() {
                   >
                     <td className="px-6 py-5">
                       <Link 
-                        href={`/dashboard/category/${encodeURIComponent(item.categoryName)}`}
+                        href={item.categoryId ? `/dashboard/category/${item.categoryId}?name=${encodeURIComponent(item.categoryName)}` : '#'}
                         className="font-semibold text-[#3b3260] hover:text-[#5b4db3] transition-colors hover:underline"
                       >
                         {item.categoryName}
@@ -101,9 +121,14 @@ export function TopCategoriesTable() {
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="text-[#8b5cf6] font-semibold">
-                        {item.riskClauseCount}
-                      </span>
+                      {item.latestRiskTitle ? (
+                        <div className="flex flex-col items-center justify-center text-xs">
+                          <span className="font-bold text-[#b91c1c]">{item.latestRiskTitle}</span>
+                          <span className="text-[#64748b] mt-1">{item.latestLegalBase}</span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-xs">-</span>
+                      )}
                     </td>
                   </tr>
                 ))

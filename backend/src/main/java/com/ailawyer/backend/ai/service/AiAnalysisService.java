@@ -46,7 +46,7 @@ public class AiAnalysisService {
         try {
             log.info("Google Gemini 모델 초기화 중...");
             
-            // 상세 분석용 (Gemini 1.5 Pro)
+            // 상세 분석용 (Gemini 2.5 Pro)
             this.geminiAssistant = AiServices.builder(AiLegalAssistant.class)
                     .chatLanguageModel(GoogleAiGeminiChatModel.builder()
                             .apiKey(geminiApiKey)
@@ -54,7 +54,7 @@ public class AiAnalysisService {
                             .build())
                     .build();
 
-            // 비전 분석용 (Gemini 1.5 Flash)
+            // 비전 분석용 (Gemini 2.5 Flash)
             this.geminiVisionAssistant = AiServices.builder(AiLegalAssistant.class)
                     .chatLanguageModel(GoogleAiGeminiChatModel.builder()
                             .apiKey(geminiApiKey)

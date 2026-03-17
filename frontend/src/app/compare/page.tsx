@@ -74,7 +74,8 @@ export default function ComparePage() {
     formData.append("fileB", fileB);
 
     try {
-      const response = await fetch("http://localhost:8080/api/reports/compare", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const response = await fetch(`${apiUrl}/api/reports/compare`, {
         method: "POST",
         headers: {
           "Authorization": token ? `Bearer ${token}` : ""

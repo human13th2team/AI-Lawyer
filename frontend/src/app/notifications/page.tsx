@@ -24,7 +24,8 @@ export default function NotificationDashboardPage() {
   const fetchNotis = async () => {
     try {
       // 해당 유저의 모든 알림 리스트 호출
-      const res = await fetch(`http://localhost:8080/api/notifications/${loggedInUserId}`);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/notifications/${loggedInUserId}`);
       if (res.ok) {
         setNotifications(await res.json());
       }
@@ -45,7 +46,8 @@ export default function NotificationDashboardPage() {
 
   const markAsRead = async (id: number) => {
     try {
-      await fetch(`http://localhost:8080/api/notifications/${id}/read`, { method: "PATCH" });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      await fetch(`${apiUrl}/api/notifications/${id}/read`, { method: "PATCH" });
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, read: true } : n))
       );
@@ -77,10 +79,10 @@ export default function NotificationDashboardPage() {
       title: "🚨 독소조항: 퇴사 후 3년간 동종업계 취업 금지",
       message: "분석된 근로계약서 제8조항이 발견되었습니다. 이 조항을 무시하고 서명할 시 귀하의 추후 취업 및 창업에 심각한 법적 제약이 따르게 됩니다. 관련 판례를 확인하고 즉시 수정안을 제시하세요.",
       severity: "CRITICAL",
-      referenceLink: "/analysis/view-details"
     };
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-    fetch("http://localhost:8080/api/notifications/send", {
+    fetch(`${apiUrl}/api/notifications/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(jsonPayload)
@@ -99,7 +101,8 @@ export default function NotificationDashboardPage() {
       ]
     };
 
-    fetch("http://localhost:8080/api/notifications/send/bulk-analysis", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    fetch(`${apiUrl}/api/notifications/send/bulk-analysis`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bulkPayload)

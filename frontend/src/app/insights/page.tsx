@@ -22,14 +22,16 @@ export default function CompanyInsightsDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/insights/stats");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/insights/stats`);
       setStats(await res.json());
     } catch (e) { console.error("통계 로드 오류", e); }
   };
 
   const fetchBlacklist = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/insights/blacklist-keywords");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/insights/blacklist-keywords`);
       setBlacklist(await res.json());
     } catch (e) { console.error("블랙리스트 로드 오류", e); }
   };
@@ -39,7 +41,8 @@ export default function CompanyInsightsDashboard() {
     e.preventDefault();
     if (!newKeyword) return;
     try {
-      await fetch("http://localhost:8080/api/insights/blacklist-keywords", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      await fetch(`${apiUrl}/api/insights/blacklist-keywords`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keyword: newKeyword, warningMessage, severity })
@@ -52,7 +55,8 @@ export default function CompanyInsightsDashboard() {
   // 계약서 본문으로 블랙리스트 키워드 스캔 테스트
   const scanDocument = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/insights/scan-blacklist", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/insights/scan-blacklist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ documentText: testDocumentText })
@@ -64,11 +68,12 @@ export default function CompanyInsightsDashboard() {
   // 갱신 시점 도래 조건 알림 Mock 발송 테스트
   const triggerRenewalNotification = async () => {
     // 1. JSON Data 얻어오기 
-    const res = await fetch("http://localhost:8080/api/insights/renewal-mock-trigger");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const res = await fetch(`${apiUrl}/api/insights/renewal-mock-trigger`);
     const jsonPayload = await res.json();
     
     // 2. 알림 센터 (Notification DB) 로 쏘기
-    await fetch("http://localhost:8080/api/notifications/send", {
+    await fetch(`${apiUrl}/api/notifications/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(jsonPayload)

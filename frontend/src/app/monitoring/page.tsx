@@ -24,7 +24,8 @@ export default function MonitoringGuardianPage() {
   const fetchConditions = async () => {
     try {
       // 스프링 부트 백엔드 엔드포인트 호출
-      const res = await fetch("http://localhost:8080/api/monitoring");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/monitoring`);
       if (res.ok) {
         const data = await res.json();
         setConditions(data);
@@ -43,7 +44,8 @@ export default function MonitoringGuardianPage() {
   const handleAddCondition = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/monitoring", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const res = await fetch(`${apiUrl}/api/monitoring`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -70,7 +72,8 @@ export default function MonitoringGuardianPage() {
 
   const handleForceCheck = async () => {
     try {
-      await fetch("http://localhost:8080/api/monitoring/run-check-now", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      await fetch(`${apiUrl}/api/monitoring/run-check-now`, {
         method: "POST",
       });
       alert("가디언 알림 검사가 강제 실행되었습니다. 백엔드 로그를 확인하세요.");

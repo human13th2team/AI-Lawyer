@@ -27,14 +27,11 @@ public class AnalysisService {
     @Transactional
     public void saveAnalysisResult(AnalysisRequestDto dto) {
 
-        // 1. category 조회 or 생성
-        CategoryEntity category = categoryRepository
-                .findByCategoryName(dto.getResult().getDocumentType())
-                .orElseGet(() -> categoryRepository.save(
-                        CategoryEntity.builder()
-                                .categoryName(dto.getResult().getDocumentType())
-                                .build()
-                ));
+        // 1. category 조회 (DB에 존재하는 값만 사용)
+        String docType = dto.getResult().getDocumentType();
+        CategoryEntity category = categoryRepository.findByCategoryName(docType)
+                .or(() -> categoryRepository.findByCategoryName("소비자/기타"))
+                .orElseGet(() -> categoryRepository.findAll().stream().findFirst().orElse(null));
 
         // 2. contract 저장 → contract_id 발급
         ContractsEntity contract = contractRepository.save(

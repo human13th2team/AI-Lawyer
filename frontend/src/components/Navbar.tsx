@@ -37,6 +37,12 @@ export function Navbar() {
           >
             대시보드
           </Link>
+          <Link 
+            href="/compare" 
+            className={`${isActive("/compare") ? "text-indigo-600 border-b-2 border-indigo-600" : "hover:text-indigo-600"} pb-1 transition-colors`}
+          >
+            비교 분석
+          </Link>
           <Link href="#" className="hover:text-indigo-600 transition-colors">가이드라인</Link>
         </div>
         

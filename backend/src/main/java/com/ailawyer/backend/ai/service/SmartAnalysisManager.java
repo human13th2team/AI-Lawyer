@@ -89,10 +89,15 @@ public class SmartAnalysisManager {
                 log.warn("인증 정보가 없습니다. 기본 ID(1)로 저장합니다.");
             }
 
-            // 2) 카테고리 매핑
-            String docType = result.getDocumentType() != null ? result.getDocumentType() : "소비자/기타";
+            // 2) 카테고리 매핑 (DB에 존재하는 값만 사용)
+            String docType = result.getDocumentType();
             CategoryEntity category = categoryRepository.findByCategoryName(docType)
-                    .orElseGet(() -> categoryRepository.save(CategoryEntity.builder().categoryName(docType).build()));
+                    .or(() -> categoryRepository.findByCategoryName("소비자/기타"))
+                    .orElseGet(() -> categoryRepository.findAll().stream().findFirst().orElse(null));
+
+            if (category == null) {
+                log.warn("Category 테이블이 비어있거나 적절한 카테고리를 찾을 수 없습니다.");
+            }
 
             // 3) 계약(Contract) 레코드 생성
             ContractsEntity contract = ContractsEntity.builder()

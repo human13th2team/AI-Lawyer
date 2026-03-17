@@ -70,6 +70,19 @@ export default function Home() {
       setResult(demoData);
       setShowResult(true);
       setLoading(false);
+      
+      // 알림 저장
+      if (demoData.result.deadline_date) {
+        const existingDocs = JSON.parse(localStorage.getItem("notifications") || "[]");
+        const newNotification = {
+          id: Date.now(),
+          fileName: demoData.fileName,
+          deadline: demoData.result.deadline_date,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem("notifications", JSON.stringify([newNotification, ...existingDocs]));
+      }
+
       setMessages([{ role: "ai", content: `안녕하세요 대표님, ${analysisMode === "detailed" ? "정밀 상세" : "빠른 간략"} 분석이 완료되었습니다. 별도의 창으로 리포트를 띄워드렸습니다. 확인 후 궁금한 점은 언제든 말씀해 주세요!` }]);
     }, 1500);
   };
@@ -125,6 +138,19 @@ export default function Home() {
       const data = await response.json();
       setResult(data);
       setShowResult(true);
+
+      // 알림 저장
+      if (data.result.deadline_date) {
+        const existingDocs = JSON.parse(localStorage.getItem("notifications") || "[]");
+        const newNotification = {
+          id: Date.now(),
+          fileName: file.name,
+          deadline: data.result.deadline_date,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem("notifications", JSON.stringify([newNotification, ...existingDocs]));
+      }
+
       setMessages([{ role: "ai", content: "분석이 완료되었습니다, 대표님. 정밀 리포트를 확인해 보세요." }]);
     } catch (err: any) {
       setError(err.message);

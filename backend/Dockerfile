@@ -1,12 +1,15 @@
 # Build stage
 FROM gradle:jdk17 AS build
 WORKDIR /app
+
+# 현재 디렉토리(backend)의 내용을 /app으로 복사
 COPY . .
 
-# 👉 [추가된 부분] gradlew 파일에 실행 권한 부여
-RUN chmod +x ./gradlew
+# 만약 gradlew가 복사된 위치를 확인하고 싶다면 아래 주석을 풀고 잠시 테스트해 볼 수 있습니다.
+# RUN ls -la
 
-# Gradle 빌드 실행 (테스트 제외하여 빌드 속도 향상)
+# 파일 권한 부여 및 빌드 (경로를 명확히 지정하거나 WORKDIR을 변경)
+RUN chmod +x gradlew
 RUN ./gradlew build -x test --no-daemon
 
 # Runtime stage
@@ -16,8 +19,5 @@ WORKDIR /app
 # 빌드 스테이지에서 생성된 jar 파일을 복사
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# Koyeb 및 Spring Boot 기본 포트
 EXPOSE 8080
-
-# 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]

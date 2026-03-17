@@ -2,22 +2,25 @@
 FROM gradle:jdk17 AS build
 WORKDIR /app
 
-# 현재 디렉토리(backend)의 내용을 /app으로 복사
+# 프로젝트 전체 코드를 도커 안으로 복사
 COPY . .
 
-# 만약 gradlew가 복사된 위치를 확인하고 싶다면 아래 주석을 풀고 잠시 테스트해 볼 수 있습니다.
-# RUN ls -la
+# 👉 [핵심 수정] gradlew가 있는 backend 폴더로 작업 디렉토리 이동
+WORKDIR /app/backend
 
-# 파일 권한 부여 및 빌드 (경로를 명확히 지정하거나 WORKDIR을 변경)
-RUN chmod +x gradlew
+# 권한 부여 및 빌드 실행
+RUN chmod +x ./gradlew
 RUN ./gradlew build -x test --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
-# 빌드 스테이지에서 생성된 jar 파일을 복사
-COPY --from=build /app/build/libs/*.jar app.jar
+# 👉 [핵심 수정] 빌드된 jar 파일을 가져오는 경로도 backend 안으로 맞춰줌
+COPY --from=build /app/backend/build/libs/*.jar app.jar
 
+# Koyeb 및 Spring Boot 기본 포트
 EXPOSE 8080
+
+# 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]

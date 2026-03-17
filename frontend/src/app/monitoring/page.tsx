@@ -24,7 +24,7 @@ export default function MonitoringGuardianPage() {
   const fetchConditions = async () => {
     try {
       // 스프링 부트 백엔드 엔드포인트 호출
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/monitoring`);
       if (res.ok) {
         const data = await res.json();
@@ -44,7 +44,7 @@ export default function MonitoringGuardianPage() {
   const handleAddCondition = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/monitoring`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -72,7 +72,7 @@ export default function MonitoringGuardianPage() {
 
   const handleForceCheck = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       await fetch(`${apiUrl}/api/monitoring/run-check-now`, {
         method: "POST",
       });

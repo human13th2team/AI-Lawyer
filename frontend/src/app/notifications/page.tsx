@@ -24,7 +24,7 @@ export default function NotificationDashboardPage() {
   const fetchNotis = async () => {
     try {
       // 해당 유저의 모든 알림 리스트 호출
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/notifications/${loggedInUserId}`);
       if (res.ok) {
         setNotifications(await res.json());
@@ -46,7 +46,7 @@ export default function NotificationDashboardPage() {
 
   const markAsRead = async (id: number) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       await fetch(`${apiUrl}/api/notifications/${id}/read`, { method: "PATCH" });
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, read: true } : n))
@@ -80,7 +80,7 @@ export default function NotificationDashboardPage() {
       message: "분석된 근로계약서 제8조항이 발견되었습니다. 이 조항을 무시하고 서명할 시 귀하의 추후 취업 및 창업에 심각한 법적 제약이 따르게 됩니다. 관련 판례를 확인하고 즉시 수정안을 제시하세요.",
       severity: "CRITICAL",
     };
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
     fetch(`${apiUrl}/api/notifications/send`, {
       method: "POST",
@@ -101,7 +101,7 @@ export default function NotificationDashboardPage() {
       ]
     };
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
     fetch(`${apiUrl}/api/notifications/send/bulk-analysis`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -22,7 +22,7 @@ export default function CompanyInsightsDashboard() {
 
   const fetchStats = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/insights/stats`);
       setStats(await res.json());
     } catch (e) { console.error("통계 로드 오류", e); }
@@ -30,7 +30,7 @@ export default function CompanyInsightsDashboard() {
 
   const fetchBlacklist = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/insights/blacklist-keywords`);
       setBlacklist(await res.json());
     } catch (e) { console.error("블랙리스트 로드 오류", e); }
@@ -41,7 +41,7 @@ export default function CompanyInsightsDashboard() {
     e.preventDefault();
     if (!newKeyword) return;
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       await fetch(`${apiUrl}/api/insights/blacklist-keywords`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,7 +55,7 @@ export default function CompanyInsightsDashboard() {
   // 계약서 본문으로 블랙리스트 키워드 스캔 테스트
   const scanDocument = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/insights/scan-blacklist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,7 +68,7 @@ export default function CompanyInsightsDashboard() {
   // 갱신 시점 도래 조건 알림 Mock 발송 테스트
   const triggerRenewalNotification = async () => {
     // 1. JSON Data 얻어오기 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
     const res = await fetch(`${apiUrl}/api/insights/renewal-mock-trigger`);
     const jsonPayload = await res.json();
     

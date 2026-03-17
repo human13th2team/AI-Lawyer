@@ -34,7 +34,7 @@ export default function AnalysisPage() {
 
     try {
       // 스프링 부트에 AI 분석 요청 전송
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
       const res = await fetch(`${apiUrl}/api/analysis/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

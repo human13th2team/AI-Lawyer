@@ -73,15 +73,7 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#F6F8FF] font-sans text-slate-900 selection:bg-indigo-100">
-      
-      {/* Dynamic Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
-      </div>
-
-      <Navbar />
+    <>
 
       <div className="max-w-7xl mx-auto space-y-8 py-12 px-8 relative z-10">
         
@@ -142,6 +134,6 @@ export default function DashboardPage() {
         </div>
 
       </div>
-    </div>
+    </>
   )
 }

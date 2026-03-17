@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { 
-  FileUp, 
-  FolderUp, 
-  Sparkles, 
-  Monitor, 
-  History, 
+import {
+  FileUp,
+  FolderUp,
+  Sparkles,
+  Monitor,
+  History,
   Settings as SettingsIcon,
   Search,
   CheckCircle,
@@ -30,7 +30,7 @@ export default function Home() {
   const [showResult, setShowResult] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<"detailed" | "simple">("detailed");
   const [showLoginModal, setShowLoginModal] = useState(false);
-  
+
   // 챗봇 관련 상태
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
@@ -49,12 +49,12 @@ export default function Home() {
     "result": {
       "document_type": "단시간근로자 근로계약서",
       "risk_score": 15,
-      "deadline_date": "2027-12-31",
+      "deadline_date": "2026-03-24",
       "summary": "본 계약서는 근로기준법을 준수하며 작성되었으나, 마감일 관리 및 일부 특약 조항에서 협상의 여지가 발견되었습니다. AI가 추출한 핵심 일정을 확인해 보세요.",
       "analysis_items": [
         {
           "topic": "계약 갱신 및 마감일",
-          "clause": "본 계약은 2027년 12월 31일부로 종료되며 자동 갱신되지 않는다.",
+          "clause": "본 계약은 2026년 03월 24일부로 종료되며 자동 갱신되지 않는다.",
           "is_unfair": false,
           "explanation": "마감일이 명확히 명시되어 있어 기한 관리에 용이합니다. 다만, 갱신 의사가 있을 경우 1개월 전 서면 통보 절차를 추가하는 것이 안전합니다.",
           "legal_base": "민법 제660조 (기간의 약정과 해지)",
@@ -70,7 +70,7 @@ export default function Home() {
       setResult(demoData);
       setShowResult(true);
       setLoading(false);
-      
+
       // 알림 저장
       if (demoData.result.deadline_date) {
         const existingDocs = JSON.parse(localStorage.getItem("notifications") || "[]");
@@ -130,7 +130,7 @@ export default function Home() {
 
       if (!response.ok) {
         if (response.status === 403) {
-            throw new Error("분석 권한이 없습니다. 다시 로그인해 주세요.");
+          throw new Error("분석 권한이 없습니다. 다시 로그인해 주세요.");
         }
         const errorData = await response.json();
         throw new Error(errorData.error || "분석 중 오류가 발생했습니다.");
@@ -172,15 +172,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8FF] font-sans text-slate-800 selection:bg-indigo-100">
-      
-      {/* Dynamic Background Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
-      </div>
-
-      <Navbar />
+    <>
 
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
@@ -190,16 +182,16 @@ export default function Home() {
             </div>
             <div className="space-y-2">
               <h3 className="text-2xl font-black text-[#1E1B4B]">로그인이 필요합니다</h3>
-              <p className="text-slate-500 font-medium">정밀 분석 서비스는 대표님들의 <br/> 안전한 회원 정보가 꼭 필요합니다.</p>
+              <p className="text-slate-500 font-medium">정밀 분석 서비스는 대표님들의 <br /> 안전한 회원 정보가 꼭 필요합니다.</p>
             </div>
             <div className="flex flex-col gap-3 pt-4">
-              <button 
+              <button
                 onClick={() => router.push("/login")}
                 className="w-full py-4 bg-[#1E1B4B] text-white rounded-2xl font-black shadow-xl shadow-indigo-100 hover:-translate-y-1 transition-all"
               >
                 로그인하러 가기
               </button>
-              <button 
+              <button
                 onClick={() => setShowLoginModal(false)}
                 className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all"
               >
@@ -211,7 +203,7 @@ export default function Home() {
       )}
 
       <main className="max-w-6xl mx-auto py-10 sm:py-20 px-4 sm:px-6 relative z-10 text-center">
-        
+
         <div className="space-y-4 sm:space-y-6 mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-[10px] sm:text-[11px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-2">
             <CheckCircle className="w-3 h-3" /> 2024년 최신 판례 데이터 업데이트 완료
@@ -228,18 +220,18 @@ export default function Home() {
 
         {/* Upload Interface */}
         <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
-          
+
           {/* Analysis Mode Selector */}
           <div className="flex justify-center">
             <div className="bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-white shadow-sm inline-flex gap-1 sm:gap-2">
-              <button 
+              <button
                 onClick={() => setAnalysisMode("detailed")}
                 className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 sm:gap-2 ${analysisMode === "detailed" ? "bg-[#1E1B4B] text-white shadow-lg" : "text-slate-500 hover:bg-white"}`}
               >
                 <Sparkles className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${analysisMode === "detailed" ? "text-indigo-400" : "text-slate-400"}`} />
                 정밀 분석
               </button>
-              <button 
+              <button
                 onClick={() => setAnalysisMode("simple")}
                 className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 sm:gap-2 ${analysisMode === "simple" ? "bg-[#1E1B4B] text-white shadow-lg" : "text-slate-500 hover:bg-white"}`}
               >
@@ -249,54 +241,54 @@ export default function Home() {
             </div>
           </div>
 
-          <div 
+          <div
             onClick={() => fileInputRef.current?.click()}
             className={`bg-white rounded-[32px] sm:rounded-[40px] shadow-[0_32px_64px_-16px_rgba(31,38,135,0.08)] p-2 sm:p-4 border border-white relative group cursor-pointer transition-all ${file ? 'ring-4 ring-indigo-100' : ''}`}
           >
-             <div className="border-2 border-dashed border-slate-100 rounded-[24px] sm:rounded-[32px] p-10 sm:p-20 flex flex-col items-center justify-center transition-all group-hover:border-indigo-200 group-hover:bg-slate-50/50">
-               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-50 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-500">
-                 {file ? <CheckCircle className="text-green-500 w-8 h-8 sm:w-10 sm:h-10" /> : <FileUp className="text-indigo-600 w-8 h-8 sm:w-10 sm:h-10" />}
-               </div>
-               
-               <h3 className="text-xl sm:text-2xl font-black text-slate-800 mb-2 px-4 line-clamp-2">
-                 {file ? `[${file.name}]` : "계약서 파일을 올려주세요"}
-               </h3>
-               <p className="text-xs sm:text-sm text-slate-400 font-medium mb-8 sm:mb-10 px-4">
-                 {file ? "파일이 준비되었습니다. 아래 버튼을 눌러 분석을 시작하세요." : "PDF, JPG, PNG 파일 업로드를 지원합니다."}
-               </p>
+            <div className="border-2 border-dashed border-slate-100 rounded-[24px] sm:rounded-[32px] p-10 sm:p-20 flex flex-col items-center justify-center transition-all group-hover:border-indigo-200 group-hover:bg-slate-50/50">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-50 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-500">
+                {file ? <CheckCircle className="text-green-500 w-8 h-8 sm:w-10 sm:h-10" /> : <FileUp className="text-indigo-600 w-8 h-8 sm:w-10 sm:h-10" />}
+              </div>
 
-               <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-auto px-4" onClick={(e) => e.stopPropagation()}>
-                 <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    onChange={handleFileSelect} 
-                    className="hidden" 
-                    accept=".pdf,.jpg,.jpeg,.png"
-                 />
-                 <button 
-                   onClick={startAnalysis}
-                   disabled={loading || !file}
-                   className="flex items-center justify-center gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-[#1E1B4B] text-white rounded-2xl font-black text-base sm:text-lg shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 hover:shadow-indigo-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                 >
-                   {loading ? (
-                     <span className="flex items-center gap-2 sm:gap-3">
-                       <Clock className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" /> 분석 중...
-                     </span>
-                   ) : (
-                     <span className="flex items-center gap-2 sm:gap-3">
-                       <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /> {analysisMode === "detailed" ? "정밀 분석" : "빠른 분석"}
-                     </span>
-                   )}
-                 </button>
-                 
-                 <button 
+              <h3 className="text-xl sm:text-2xl font-black text-slate-800 mb-2 px-4 line-clamp-2">
+                {file ? `[${file.name}]` : "계약서 파일을 올려주세요"}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 font-medium mb-8 sm:mb-10 px-4">
+                {file ? "파일이 준비되었습니다. 아래 버튼을 눌러 분석을 시작하세요." : "PDF, JPG, PNG 파일 업로드를 지원합니다."}
+              </p>
+
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-auto px-4" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                />
+                <button
+                  onClick={startAnalysis}
+                  disabled={loading || !file}
+                  className="flex items-center justify-center gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-[#1E1B4B] text-white rounded-2xl font-black text-base sm:text-lg shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 hover:shadow-indigo-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2 sm:gap-3">
+                      <Clock className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" /> 분석 중...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 sm:gap-3">
+                      <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" /> {analysisMode === "detailed" ? "정밀 분석" : "빠른 분석"}
+                    </span>
+                  )}
+                </button>
+
+                <button
                   onClick={handleDemo}
                   className="flex items-center justify-center gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-base sm:text-lg hover:border-indigo-100 hover:text-indigo-600 transition-all"
-                 >
-                   <Monitor className="w-5 h-5 sm:w-6 sm:h-6" /> 데모 실행
-                 </button>
-               </div>
-             </div>
+                >
+                  <Monitor className="w-5 h-5 sm:w-6 sm:h-6" /> 데모 실행
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -320,9 +312,9 @@ export default function Home() {
 
       {/* Analysis Result "Separate Window" (Modal Overlay) */}
       {showResult && result && (
-        <AnalysisResultView 
-          result={result} 
-          onClose={() => setShowResult(false)} 
+        <AnalysisResultView
+          result={result}
+          onClose={() => setShowResult(false)}
           onOpenChat={() => {
             setShowResult(false);
             setChatOpen(true);
@@ -349,7 +341,7 @@ export default function Home() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-slate-50/50">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -360,13 +352,13 @@ export default function Home() {
                 ))}
                 <div ref={chatEndRef} />
               </div>
-              
+
               <form onSubmit={handleSendMessage} className="p-4 sm:p-6 bg-white border-t border-slate-100 flex gap-2 sm:gap-3">
-                <input 
-                  type="text" 
-                  value={userInput} 
+                <input
+                  type="text"
+                  value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
-                  placeholder="질문을 입력하세요" 
+                  placeholder="질문을 입력하세요"
                   className="flex-1 text-xs sm:text-sm outline-none border-none bg-slate-100 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl focus:ring-2 focus:ring-indigo-100 transition-all font-medium"
                 />
                 <button type="submit" className="w-10 h-10 sm:w-11 sm:h-11 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 shrink-0">
@@ -375,15 +367,15 @@ export default function Home() {
               </form>
             </div>
           )}
-          
-          <button 
-            onClick={() => setChatOpen(!chatOpen)} 
+
+          <button
+            onClick={() => setChatOpen(!chatOpen)}
             className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl sm:rounded-[22px] shadow-2xl flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 ${chatOpen ? 'bg-rose-500 rotate-90 shadow-rose-200' : 'bg-[#1E1B4B] shadow-indigo-200'}`}
           >
             {chatOpen ? <X className="text-white w-6 h-6 sm:w-7 sm:h-7" /> : <MessageSquare className="text-white w-6 h-6 sm:w-7 sm:h-7 fill-white/10" />}
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

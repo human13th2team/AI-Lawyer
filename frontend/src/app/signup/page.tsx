@@ -44,10 +44,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8FF] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
-      <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
+    <div className="min-h-[80vh] flex items-center justify-center p-4 sm:p-6 relative">
+      {/* Background elements are handled by layout */}
 
       <div className="w-full max-w-[480px] relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
         <div className="bg-white/80 backdrop-blur-2xl rounded-[24px] sm:rounded-[32px] shadow-2xl shadow-indigo-100 p-6 sm:p-10 border border-white/50">

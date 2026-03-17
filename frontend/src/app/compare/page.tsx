@@ -105,7 +105,7 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans pb-20">
+    <>
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white rounded-[32px] p-10 max-w-[400px] w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
@@ -133,7 +133,6 @@ export default function ComparePage() {
           </div>
         </div>
       )}
-      <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 pt-16">
         <header className="text-center mb-16 space-y-4">
@@ -356,6 +355,6 @@ export default function ComparePage() {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 }

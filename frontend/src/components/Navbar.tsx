@@ -17,13 +17,28 @@ export function Navbar() {
     const loadNotifications = () => {
       const stored = localStorage.getItem("notifications");
       if (stored) {
-        setNotifications(JSON.parse(stored));
+        const all = JSON.parse(stored);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const filtered = all
+          .map((n: any) => {
+            const deadline = new Date(n.deadline);
+            deadline.setHours(0, 0, 0, 0);
+            const diffTime = deadline.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return { ...n, diffDays };
+          })
+          .filter((n: any) => {
+            // 오늘 기준 10일 이내일 때만 노출
+            return n.diffDays >= 0 && n.diffDays <= 10;
+          });
+        setNotifications(filtered);
       }
     };
 
     loadNotifications();
     window.addEventListener("storage", loadNotifications);
-    // 폴링으로 로컬스토리지 변화 감지 (같은 탭 내 변화용)
     const interval = setInterval(loadNotifications, 2000);
 
     return () => {
@@ -33,9 +48,13 @@ export function Navbar() {
   }, []);
 
   const deleteNotification = (id: number) => {
-    const updated = notifications.filter(n => n.id !== id);
-    setNotifications(updated);
-    localStorage.setItem("notifications", JSON.stringify(updated));
+    const stored = localStorage.getItem("notifications");
+    if (stored) {
+      const all = JSON.parse(stored);
+      const updated = all.filter((n: any) => n.id !== id);
+      localStorage.setItem("notifications", JSON.stringify(updated));
+      // loadNotifications will handle the UI update via polling or storage event
+    }
   };
 
   const isActive = (path: string) => pathname === path;
@@ -141,10 +160,13 @@ export function Navbar() {
                           <div className="flex justify-between items-start gap-3">
                             <div className="flex-1 min-w-0">
                               <p className="text-[13px] font-bold text-slate-800 truncate mb-1">{n.fileName}</p>
-                              <div className="flex items-center gap-1.5 text-rose-500">
-                                <Calendar className="w-3 h-3" />
-                                <span className="text-[11px] font-black">마감일: {n.deadline}</span>
-                              </div>
+                                <div className="flex items-center gap-1.5 text-rose-500">
+                                  <Calendar className="w-3 h-3" />
+                                  <span className="text-[11px] font-black">마감일: {n.deadline}</span>
+                                  <span className={`ml-2 px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase ${n.diffDays === 0 ? "bg-rose-600 text-white animate-pulse" : "bg-rose-100 text-rose-600"}`}>
+                                    {n.diffDays === 0 ? "D-Day" : `D-${n.diffDays}`}
+                                  </span>
+                                </div>
                             </div>
                             <button 
                               onClick={() => deleteNotification(n.id)}

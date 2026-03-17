@@ -1,0 +1,145 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Sparkles, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+
+export default function SignupPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, nickname }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        login({ userId: data.userId, email: data.email, nickname: data.nickname }, data.token);
+        router.push("/");
+      } else {
+        setError(data.message || "회원가입에 실패했습니다. 정보를 다시 확인해 주세요.");
+      }
+    } catch (err) {
+      setError("서버와 통신 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F6F8FF] flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
+
+      <div className="w-full max-w-[480px] relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
+        <div className="bg-white/80 backdrop-blur-2xl rounded-[32px] shadow-2xl shadow-indigo-100 p-10 border border-white/50">
+          <div className="flex flex-col items-center mb-10 text-center">
+            <div className="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-200 mb-6 -rotate-3">
+              <Sparkles className="text-white w-8 h-8 fill-white/20" />
+            </div>
+            <h1 className="text-3xl font-black text-[#1E1B4B] tracking-tight mb-2">새로운 대표님 등록</h1>
+            <p className="text-slate-500 font-medium">전담 AI 법률 비서를 만나보세요</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">성함 / 닉네임</label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <input 
+                  type="text"
+                  required
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-slate-800"
+                  placeholder="홍길동 대표님"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">이메일 주소</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <input 
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-slate-800"
+                  placeholder="ceo@company.com"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">비밀번호 설정</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <input 
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-slate-800"
+                  placeholder="안전한 비밀번호 입력"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 text-red-500 bg-red-50 p-4 rounded-xl text-sm font-bold border border-red-100">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <button 
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 text-white rounded-2xl py-4 font-black flex items-center justify-center gap-2 group hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {loading ? "작성 중..." : "AI 비서 서비스 가입하기"}
+              {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+            </button>
+          </form>
+
+          <div className="mt-10 pt-8 border-t border-slate-100 text-center">
+            <p className="text-slate-500 text-sm font-medium">
+              이미 계정이 있으신가요? 
+              <Link href="/login" className="text-indigo-600 font-bold ml-2 hover:underline">로그인 하기</Link>
+            </p>
+          </div>
+
+          <div className="mt-6 flex items-center justify-center gap-6">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
+              <CheckCircle2 className="w-3 h-3 text-indigo-400" />
+              보안 인증 완료
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
+              <CheckCircle2 className="w-3 h-3 text-indigo-400" />
+              데이터 암호화
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -43,54 +43,54 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8FF] flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F6F8FF] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/30 blur-[120px] rounded-full"></div>
       <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-violet-200/30 blur-[120px] rounded-full"></div>
 
       <div className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in duration-500">
-        <div className="bg-white/80 backdrop-blur-2xl rounded-[32px] shadow-2xl shadow-indigo-100 p-10 border border-white/50">
-          <div className="flex flex-col items-center mb-10">
-            <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-200 mb-6 rotate-3">
-              <Sparkles className="text-white w-8 h-8 fill-white/20" />
+        <div className="bg-white/80 backdrop-blur-2xl rounded-[24px] sm:rounded-[32px] shadow-2xl shadow-indigo-100 p-6 sm:p-10 border border-white/50">
+          <div className="flex flex-col items-center mb-8 sm:mb-10">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-200 mb-4 sm:mb-6 rotate-3">
+              <Sparkles className="text-white w-6 h-6 sm:w-8 sm:h-8 fill-white/20" />
             </div>
-            <h1 className="text-3xl font-black text-[#1E1B4B] tracking-tight mb-2">대표님, 반갑습니다</h1>
-            <p className="text-slate-500 font-medium">AI-Lawyer의 정밀 분석을 시작합니다</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1B4B] tracking-tight mb-2 text-center">대표님, 반갑습니다</h1>
+            <p className="text-sm sm:text-base text-slate-500 font-medium text-center">AI-Lawyer의 정밀 분석을 시작합니다</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">이메일 주소</label>
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-[11px] sm:text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">이메일 주소</label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
                 <input 
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-slate-800"
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-xl sm:rounded-2xl py-3 sm:py-4 pl-10 sm:pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-sm sm:text-base text-slate-800"
                   placeholder="ceo@company.com"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">비밀번호</label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-[11px] sm:text-[13px] font-bold text-slate-400 uppercase tracking-widest ml-1">비밀번호</label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
                 <input 
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl py-4 pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-slate-800"
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-xl sm:rounded-2xl py-3 sm:py-4 pl-10 sm:pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-sm sm:text-base text-slate-800"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-red-500 bg-red-50 p-4 rounded-xl text-sm font-bold border border-red-100 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-bold border border-red-100 animate-in fade-in slide-in-from-top-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {error}
               </div>
@@ -99,17 +99,17 @@ export default function LoginPage() {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-[#1E1B4B] text-white rounded-2xl py-4 font-black flex items-center justify-center gap-2 group hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50"
+              className="w-full bg-[#1E1B4B] text-white rounded-xl sm:rounded-2xl py-3.5 sm:py-4 font-black flex items-center justify-center gap-2 group hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50 text-sm sm:text-base"
             >
-              {loading ? "인증 중..." : "분석 시스템 접속하기"}
-              {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+              {loading ? "인증 중..." : "시스템 접속하기"}
+              {!loading && <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-slate-100 text-center">
-            <p className="text-slate-500 text-sm font-medium">
+          <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-slate-100 text-center">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
               아직 계정이 없으신가요? 
-              <Link href="/signup" className="text-indigo-600 font-bold ml-2 hover:underline">회원가입</Link>
+              <Link href="/signup" className="text-indigo-600 font-bold ml-2 hover:underline tracking-tight">회원가입</Link>
             </p>
           </div>
         </div>

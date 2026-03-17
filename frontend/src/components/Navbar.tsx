@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Settings as SettingsIcon, LogOut, User, Bell, Trash2, Calendar } from "lucide-react";
+import { Sparkles, Settings as SettingsIcon, LogOut, User, Bell, Trash2, Calendar, Menu, X } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 export function Navbar() {
@@ -11,6 +11,7 @@ export function Navbar() {
   const { user, logout } = useAuth();
   const [showNotifications, setShowNotifications] = React.useState(false);
   const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   React.useEffect(() => {
     const loadNotifications = () => {
@@ -39,75 +40,77 @@ export function Navbar() {
 
   const isActive = (path: string) => pathname === path;
 
+  const navLinks = [
+    { href: "/", label: "분석하기" },
+    { href: "/dashboard", label: "대시보드" },
+    { href: "/compare", label: "비교 분석" },
+    { href: "#", label: "가이드라인" },
+  ];
+
   return (
-    <nav className="flex items-center justify-between px-10 py-5 bg-white/70 backdrop-blur-md sticky top-0 z-40 border-b border-white/50">
-      <Link href="/" className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-indigo-600 rounded-[14px] flex items-center justify-center shadow-indigo-100 shadow-xl rotate-3">
-          <Sparkles className="text-white w-5 h-5 fill-white/20" />
-        </div>
-        <span className="text-2xl font-black tracking-tight text-[#1E1B4B]">
-          AI-Lawyer <span className="text-indigo-600">.</span>
-        </span>
-      </Link>
-      
-      <div className="flex items-center gap-10">
-        <div className="hidden md:flex gap-8 text-[13px] font-bold text-slate-500 uppercase tracking-widest">
-          <Link 
-            href="/" 
-            className={`${isActive("/") ? "text-indigo-600 border-b-2 border-indigo-600" : "hover:text-indigo-600"} pb-1 transition-colors`}
-          >
-            분석하기
-          </Link>
-          <Link 
-            href="/dashboard" 
-            className={`${isActive("/dashboard") ? "text-indigo-600 border-b-2 border-indigo-600" : "hover:text-indigo-600"} pb-1 transition-colors`}
-          >
-            대시보드
-          </Link>
-          <Link 
-            href="/compare" 
-            className={`${isActive("/compare") ? "text-indigo-600 border-b-2 border-indigo-600" : "hover:text-indigo-600"} pb-1 transition-colors`}
-          >
-            비교 분석
-          </Link>
-          <Link href="#" className="hover:text-indigo-600 transition-colors">가이드라인</Link>
+    <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-600 rounded-[10px] sm:rounded-[14px] flex items-center justify-center shadow-indigo-100 shadow-xl rotate-3">
+            <Sparkles className="text-white w-4 h-4 sm:w-5 sm:h-5 fill-white/20" />
+          </div>
+          <span className="text-xl sm:text-2xl font-black tracking-tight text-[#1E1B4B]">
+            AI-Lawyer <span className="text-indigo-600">.</span>
+          </span>
+        </Link>
+        
+        <div className="hidden lg:flex items-center gap-10">
+          <div className="flex gap-8 text-[13px] font-bold text-slate-500 uppercase tracking-widest">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.href}
+                href={link.href} 
+                className={`${isActive(link.href) ? "text-indigo-600 border-b-2 border-indigo-600" : "hover:text-indigo-600"} pb-1 transition-colors`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          {user ? (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
-                <User className="w-4 h-4 text-indigo-600" />
-                <span className="text-sm font-bold text-indigo-900">{user.nickname}님</span>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden sm:flex items-center gap-4">
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-full border border-indigo-100">
+                  <User className="w-4 h-4 text-indigo-600" />
+                  <span className="text-sm font-bold text-indigo-900">{user.nickname}님</span>
+                </div>
+                <button 
+                  onClick={logout}
+                  className="p-2.5 bg-slate-100 hover:bg-red-50 hover:text-red-500 rounded-full transition-all group"
+                  title="로그아웃"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
-              <button 
-                onClick={logout}
-                className="p-2.5 bg-slate-100 hover:bg-red-50 hover:text-red-500 rounded-full transition-all group"
-                title="로그아웃"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link 
-                href="/login" 
-                className="px-6 py-2.5 text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                로그인
-              </Link>
-              <Link 
-                href="/signup" 
-                className="px-6 py-2.5 bg-[#1E1B4B] text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:-translate-y-0.5 transition-all"
-              >
-                회원가입
-              </Link>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/login" 
+                  className="px-4 lg:px-6 py-2.5 text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors"
+                >
+                  로그인
+                </Link>
+                <Link 
+                  href="/signup" 
+                  className="px-4 lg:px-6 py-2.5 bg-[#1E1B4B] text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:-translate-y-0.5 transition-all"
+                >
+                  회원가입
+                </Link>
+              </div>
+            )}
+          </div>
+
           <div className="relative">
             <button 
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 rounded-full transition-all relative"
+              className="p-2 sm:p-2.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 rounded-full transition-all relative"
             >
               <Bell className="w-4 h-4" />
               {notifications.length > 0 && (
@@ -116,7 +119,7 @@ export function Navbar() {
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
+              <div className="absolute right-0 mt-3 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
                 <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
                   <h3 className="font-bold text-slate-800 text-sm">계약 마감 알림</h3>
                   <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
@@ -158,11 +161,74 @@ export function Navbar() {
               </div>
             )}
           </div>
-          <button className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
+
+          <button className="hidden sm:block p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors">
             <SettingsIcon className="w-4 h-4 text-slate-500" />
+          </button>
+
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-slate-100 p-4 space-y-4 animate-in slide-in-from-top-4 duration-300">
+          <div className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.href}
+                href={link.href} 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`px-4 py-3 rounded-xl font-bold ${isActive(link.href) ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"}`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          
+          <div className="pt-4 border-t border-slate-50">
+            {user ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 px-4 py-3 bg-indigo-50 rounded-xl">
+                  <User className="w-5 h-5 text-indigo-600" />
+                  <span className="font-bold text-indigo-900">{user.nickname}님</span>
+                </div>
+                <button 
+                  onClick={() => {
+                    logout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-red-500 font-bold hover:bg-red-50 rounded-xl transition-colors"
+                >
+                  <LogOut className="w-5 h-5" /> 로그아웃
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <Link 
+                  href="/login" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-4 py-3 text-center text-sm font-bold text-slate-600 bg-slate-50 rounded-xl"
+                >
+                  로그인
+                </Link>
+                <Link 
+                  href="/signup" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-4 py-3 text-center text-sm font-bold text-white bg-[#1E1B4B] rounded-xl"
+                >
+                  회원가입
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

@@ -1,12 +1,16 @@
 package com.ailawyer.backend.ai.service;
 
 import com.ailawyer.backend.ai.dto.AnalysisResponseDto;
+import com.ailawyer.backend.dashboard.dto.AnalysisItemDto;
+import com.ailawyer.backend.dashboard.dto.AnalysisRequestDto;
 import com.ailawyer.backend.dashboard.entity.AnalysisReportEntity;
 import com.ailawyer.backend.dashboard.entity.CategoryEntity;
 import com.ailawyer.backend.dashboard.entity.ContractsEntity;
+import com.ailawyer.backend.dashboard.entity.RiskClauseEntity;
 import com.ailawyer.backend.dashboard.repository.AnalysisReportRepository;
 import com.ailawyer.backend.dashboard.repository.CategoryRepository;
 import com.ailawyer.backend.dashboard.repository.ContractRepository;
+import com.ailawyer.backend.dashboard.repository.RiskClauseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +41,7 @@ public class SmartAnalysisManager {
     private final ContractRepository contractRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final RiskClauseRepository riskClauseRepository;
 
     /**
      * 전체 분석 프로세스를 관리합니다. (PDF 텍스트 추출 혹은 이미지 직접 분석)
@@ -111,6 +116,27 @@ public class SmartAnalysisManager {
 
             reportRepository.save(report);
             log.info("Analysis_Report 저장 완료. ID: {}", report.getReportId());
+
+            // 5) 불공정 조항(riskClause) 저장
+            log.info("불공정 조항(is_unfair = true) 필터링 및 지정 시작...");
+
+            if (result.getAnalysisItems() != null) {
+                for (AnalysisResponseDto.AnalysisItem item : result.getAnalysisItems()) {
+                    if (item.isUnfair()) {
+                        log.info("위험 조항 발견, 저장중: {}", item.getTopic());
+
+                        RiskClauseEntity riskClause = RiskClauseEntity.builder()
+                                .contractId(contract.getContractId())
+                                .riskTitle(item.getTopic())
+                                .legalBase(item.getLegalBase())
+                                .build();
+
+                        riskClauseRepository.save(riskClause);
+                    } else {
+                        log.debug("[정상 조항] 저장 제외: {}", item.getTopic());
+                    }
+                }
+            }
 
         } catch (Exception e) {
             log.error("DB 저장 중 오류 발생 (분석은 계속 진행): {}", e.getMessage());

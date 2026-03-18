@@ -3,8 +3,6 @@
 import React from "react"
 import { 
   X, 
-  Download, 
-  Share2, 
   ChevronRight, 
   AlertCircle, 
   CheckCircle2, 
@@ -45,9 +43,7 @@ export function AnalysisResultView({ result, onClose, onOpenChat }: AnalysisResu
           </div>
           
           <div className="flex items-center gap-2">
-            <button className="hidden sm:flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
-              <Download className="w-4 h-4" /> 저장
-            </button>
+            
             <button 
               onClick={onClose}
               className="p-2 hover:bg-slate-100 rounded-full transition-colors"

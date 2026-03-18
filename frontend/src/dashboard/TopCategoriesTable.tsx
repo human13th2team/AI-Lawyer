@@ -71,13 +71,13 @@ export function TopCategoriesTable() {
       </CardHeader>
       <CardContent className="p-0">
         <div className="w-full overflow-x-auto">
-          <table className="w-full text-sm text-left whitespace-nowrap">
+          <table className="w-full text-sm text-left">
             <thead className="text-[13px] uppercase bg-slate-50 text-[#635f79] font-bold border-b border-slate-200">
               <tr>
-                <th scope="col" className="px-6 py-4 tracking-wider">카테고리명</th>
-                <th scope="col" className="px-6 py-4 tracking-wider text-center">평균 위험도</th>
-                <th scope="col" className="px-6 py-4 tracking-wider text-center">불리함 비율</th>
-                <th scope="col" className="px-6 py-4 tracking-wider text-center">최신 위험 조항 예시</th>
+                <th scope="col" className="px-6 py-4 tracking-wider whitespace-nowrap">카테고리명</th>
+                <th scope="col" className="px-6 py-4 tracking-wider text-center whitespace-nowrap">평균 위험도</th>
+                <th scope="col" className="px-6 py-4 tracking-wider text-center whitespace-nowrap">불리함 비율</th>
+                <th scope="col" className="px-6 py-4 tracking-wider text-center whitespace-nowrap">최신 위험 조항 예시</th>
               </tr>
             </thead>
             <tbody>
@@ -107,7 +107,7 @@ export function TopCategoriesTable() {
                         {item.categoryName}
                       </Link>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-6 py-5 text-center whitespace-nowrap">
                       <div className="flex items-center justify-center space-x-2">
                         {item.avgRiskScore >= 70 && <AlertTriangle className="w-4 h-4 text-orange-500" />}
                         <span className={`font-semibold ${item.avgRiskScore >= 70 ? 'text-orange-600' : 'text-slate-600'}`}>
@@ -115,12 +115,12 @@ export function TopCategoriesTable() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-6 py-5 text-center whitespace-nowrap">
                       <span className="font-semibold text-[#4a4175]">
                         {item.avgDisadvantagePercent.toFixed(2)}%
                       </span>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-6 py-5 text-center min-w-[250px] whitespace-normal break-words">
                       {item.latestRiskTitle ? (
                         <div className="flex flex-col items-center justify-center text-xs">
                           <span className="font-bold text-[#b91c1c]">{item.latestRiskTitle}</span>

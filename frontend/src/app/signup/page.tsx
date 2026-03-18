@@ -53,7 +53,7 @@ export default function SignupPage() {
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-200 mb-4 sm:mb-6 -rotate-3">
               <Sparkles className="text-white w-6 h-6 sm:w-8 sm:h-8 fill-white/20" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1B4B] tracking-tight mb-2">새로운 대표님 등록</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1B4B] tracking-tight mb-2">새로운 계정 등록</h1>
             <p className="text-sm sm:text-base text-slate-500 font-medium">전담 AI 법률 비서를 만나보세요</p>
           </div>
 
@@ -68,7 +68,7 @@ export default function SignupPage() {
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   className="w-full bg-slate-50 border-2 border-slate-50 rounded-xl sm:rounded-2xl py-3 sm:py-4 pl-10 sm:pl-12 pr-4 focus:bg-white focus:border-indigo-100 outline-none transition-all font-medium text-sm sm:text-base text-slate-800"
-                  placeholder="홍길동 대표님"
+                  placeholder="홍길동"
                 />
               </div>
             </div>

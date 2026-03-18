@@ -25,7 +25,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-xs">
-              복잡한 법률 조항과 리스크를 AI가 정밀 분석하여 대표님의 비즈니스를 안전하게 보호합니다. 24시간 실시간 법률 조력자를 만나보세요.
+              복잡한 법률 조항과 리스크를 AI가 정밀 분석하여 비즈니스를 안전하게 보호합니다. 24시간 실시간 법률 조력자를 만나보세요.
             </p>
             <div className="flex items-center gap-4">
               {[
@@ -149,7 +149,7 @@ export function Footer() {
               <span className="text-[12px] font-black text-slate-500 uppercase tracking-widest">System Operational</span>
             </div>
             <div className="text-slate-400 text-[13px] font-medium hidden sm:block">
-              Made for <span className="text-indigo-600 font-bold italic">CEOs / Leaders</span>
+              With AI-Lawyer
             </div>
           </div>
         </div>

@@ -35,6 +35,18 @@ public class AnalysisController {
                 return ResponseEntity.badRequest().body(Map.of("error", "파일이 없습니다."));
             }
             log.info("파일 이름: {}, 크기: {}", file.getOriginalFilename(), file.getSize());
+
+            // [대표님 요청 사항] 빠른 분석(simple) 모드 시 PDF 파일만 업로드 가능하도록 제한 (Groq 스펙 반영)
+            if ("simple".equalsIgnoreCase(mode)) {
+                String contentType = file.getContentType();
+                if (!"application/pdf".equalsIgnoreCase(contentType)) {
+                    log.warn("빠른 분석 모드에서 PDF가 아닌 파일 업로드 시도: {}", contentType);
+                    return ResponseEntity.badRequest().body(Map.of(
+                            "error", "빠른 분석은 PDF 파일만 분석 가능합니다.",
+                            "details", "PDF 파일로 다시 업로드하시거나, 정밀 분석 모드를 이용해 주세요."));
+                }
+            }
+
             AnalysisResponseDto result = analysisManager.processAnalysis(file, mode);
 
             // 결과가 계약서가 아닌 경우 차단 및 안내

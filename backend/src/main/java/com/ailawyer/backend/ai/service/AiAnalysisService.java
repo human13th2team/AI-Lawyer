@@ -54,6 +54,7 @@ public class AiAnalysisService {
                             .temperature(0.1) // 계약서 분석의 정확도를 높이기 위해 추가
                             .timeout(Duration.ofSeconds(120)) // ★ 타임아웃을 120초로 넉넉하게 연장
                             .maxRetries(0) // ★ 자동 재시도 차단 (429 에러의 핵심 원인 해결)
+                            .logRequestsAndResponses(true)
                             .build())
                     .build();
 
@@ -64,6 +65,7 @@ public class AiAnalysisService {
                             .temperature(0.1)
                             .timeout(Duration.ofSeconds(120)) // ★ 비전 모델도 동일하게 연장
                             .maxRetries(0) // ★ 자동 재시도 차단
+                            .logRequestsAndResponses(true)
                             .build())
                     .build();
 

@@ -9,6 +9,7 @@ import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.time.Duration;
 
 @Slf4j
 @Service
@@ -45,20 +46,24 @@ public class AiAnalysisService {
     private void initGemini() {
         try {
             log.info("Google Gemini 모델 초기화 중...");
-            
-            // 상세 분석용 (Gemini 2.5 Pro)
+
             this.geminiAssistant = AiServices.builder(AiLegalAssistant.class)
                     .chatLanguageModel(GoogleAiGeminiChatModel.builder()
                             .apiKey(geminiApiKey)
-                            .modelName("gemini-2.5-pro")
+                            .modelName("gemini-2.5-flash")
+                            .temperature(0.1) // 계약서 분석의 정확도를 높이기 위해 추가
+                            .timeout(Duration.ofSeconds(120)) // ★ 타임아웃을 120초로 넉넉하게 연장
+                            .maxRetries(0) // ★ 자동 재시도 차단 (429 에러의 핵심 원인 해결)
                             .build())
                     .build();
 
-            // 비전 분석용 (Gemini 2.5 Flash)
             this.geminiVisionAssistant = AiServices.builder(AiLegalAssistant.class)
                     .chatLanguageModel(GoogleAiGeminiChatModel.builder()
                             .apiKey(geminiApiKey)
                             .modelName("gemini-2.5-flash")
+                            .temperature(0.1)
+                            .timeout(Duration.ofSeconds(120)) // ★ 비전 모델도 동일하게 연장
+                            .maxRetries(0) // ★ 자동 재시도 차단
                             .build())
                     .build();
 
@@ -71,8 +76,9 @@ public class AiAnalysisService {
     private void initGroq() {
         try {
             log.info("Groq 모델 초기화 중...");
-            
-            dev.langchain4j.model.openai.OpenAiChatModel groqModel = dev.langchain4j.model.openai.OpenAiChatModel.builder()
+
+            dev.langchain4j.model.openai.OpenAiChatModel groqModel = dev.langchain4j.model.openai.OpenAiChatModel
+                    .builder()
                     .apiKey(groqApiKey)
                     .baseUrl(groqApiUrl)
                     .modelName("llama-3.3-70b-versatile")
@@ -92,13 +98,15 @@ public class AiAnalysisService {
     public AnalysisResponseDto analyze(String extractedText, String categoryList, String mode) {
         boolean isDetailed = "detailed".equalsIgnoreCase(mode);
         log.info("AI 분석 시작 | 모드: {} | 엔진: {}", mode, isDetailed ? "Gemini" : "Groq");
-        
+
         try {
             AiLegalAssistant assistant = (isDetailed) ? geminiAssistant : groqAssistant;
-            if (assistant == null) assistant = (geminiAssistant != null) ? geminiAssistant : groqAssistant;
-            
-            if (assistant == null) throw new IllegalStateException("사용 가능한 AI 서비스가 없습니다.");
-            
+            if (assistant == null)
+                assistant = (geminiAssistant != null) ? geminiAssistant : groqAssistant;
+
+            if (assistant == null)
+                throw new IllegalStateException("사용 가능한 AI 서비스가 없습니다.");
+
             AnalysisResponseDto response = assistant.analyzeContract(extractedText, categoryList);
             log.info("AI 텍스트 분석 완료");
             return response;
@@ -111,13 +119,15 @@ public class AiAnalysisService {
     public AnalysisResponseDto analyzeImage(byte[] imageBytes, String mimeType, String categoryList, String mode) {
         boolean isDetailed = "detailed".equalsIgnoreCase(mode);
         log.info("AI 이미지 분석 시작 | 모드: {} | 엔진: {}", mode, isDetailed ? "Gemini Vision" : "Groq");
-        
+
         try {
             // Groq는 비전 성능이 낮으므로 이미지는 가급적 Gemini(상세)로 유도하나, 모드에 따라 선택
             AiLegalAssistant assistant = (isDetailed) ? geminiVisionAssistant : groqAssistant;
-            if (assistant == null) assistant = geminiVisionAssistant;
+            if (assistant == null)
+                assistant = geminiVisionAssistant;
 
-            if (assistant == null) throw new IllegalStateException("사용 가능한 비전 서비스가 없습니다.");
+            if (assistant == null)
+                throw new IllegalStateException("사용 가능한 비전 서비스가 없습니다.");
 
             Image image = Image.builder()
                     .base64Data(Base64.getEncoder().encodeToString(imageBytes))
@@ -147,4 +157,3 @@ public class AiAnalysisService {
         }
     }
 }
-

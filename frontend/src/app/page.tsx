@@ -89,7 +89,10 @@ export default function Home() {
           throw new Error("분석 권한이 없습니다. 다시 로그인해 주세요.");
         }
         const errorData = await response.json();
-        throw new Error(errorData.error || "분석 중 오류가 발생했습니다.");
+        const errorMessage = errorData.details 
+          ? `${errorData.error} ${errorData.details}`
+          : (errorData.error || "분석 중 오류가 발생했습니다.");
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -236,8 +239,12 @@ export default function Home() {
                     </span>
                   )}
                 </button>
-
               </div>
+              {error && (
+                <div className="mt-4 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-bold animate-in fade-in slide-in-from-top-2">
+                  {error}
+                </div>
+              )}
             </div>
           </div>
         </div>

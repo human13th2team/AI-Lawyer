@@ -42,8 +42,8 @@ public class AnalysisController {
                 log.warn("업로드된 문서가 계약서가 아님: {}", file.getOriginalFilename());
                 contextManager.clearContext("default");
                 return ResponseEntity.badRequest().body(Map.of(
-                        "error", "업로드하신 문서는 법적 계약서 형식이 아닌 것으로 판단됩니다.",
-                        "details", "근로계약서, 임대차계약서 등 실제 계약 문서를 업로드해 주세요."));
+                        "error", "업로드하신 문서는 법적 계약서가 아닌 것으로 분석되었습니다.",
+                        "details", "정밀한 분석을 위해 근로계약서, 임대차계약서 등 실제 계약 문서를 다시 업로드해 주세요."));
             }
 
             // 계약서로 판별된 경우 컨텍스트 저장 (사용자별 독립 컨텍스트)

@@ -52,7 +52,7 @@ export default function LoginPage() {
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-200 mb-4 sm:mb-6 rotate-3">
               <Sparkles className="text-white w-6 h-6 sm:w-8 sm:h-8 fill-white/20" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1B4B] tracking-tight mb-2 text-center">대표님, 반갑습니다</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1E1B4B] tracking-tight mb-2 text-center">환영합니다!</h1>
             <p className="text-sm sm:text-base text-slate-500 font-medium text-center">AI-Lawyer의 정밀 분석을 시작합니다</p>
           </div>
 

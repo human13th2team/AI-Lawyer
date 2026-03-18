@@ -42,50 +42,6 @@ export default function Home() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 데모 데이터
-  const demoData = {
-    "timestamp": new Date().toISOString(),
-    "fileName": "단기기간근로자 계약서_샘플.jpg",
-    "result": {
-      "document_type": "단시간근로자 근로계약서",
-      "risk_score": 15,
-      "deadline_date": "2026-03-24",
-      "summary": "본 계약서는 근로기준법을 준수하며 작성되었으나, 마감일 관리 및 일부 특약 조항에서 협상의 여지가 발견되었습니다. AI가 추출한 핵심 일정을 확인해 보세요.",
-      "analysis_items": [
-        {
-          "topic": "계약 갱신 및 마감일",
-          "clause": "본 계약은 2026년 03월 24일부로 종료되며 자동 갱신되지 않는다.",
-          "is_unfair": false,
-          "explanation": "마감일이 명확히 명시되어 있어 기한 관리에 용이합니다. 다만, 갱신 의사가 있을 경우 1개월 전 서면 통보 절차를 추가하는 것이 안전합니다.",
-          "legal_base": "민법 제660조 (기간의 약정과 해지)",
-          "negotiation_script": "대표님, 계약 만료 30일 전에 상호 합의 하에 연장 여부를 검토한다는 조항을 넣는 것은 어럴까요?"
-        }
-      ]
-    }
-  };
-
-  const handleDemo = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setResult(demoData);
-      setShowResult(true);
-      setLoading(false);
-
-      // 알림 저장
-      if (demoData.result.deadline_date) {
-        const existingDocs = JSON.parse(localStorage.getItem("notifications") || "[]");
-        const newNotification = {
-          id: Date.now(),
-          fileName: demoData.fileName,
-          deadline: demoData.result.deadline_date,
-          timestamp: new Date().toISOString()
-        };
-        localStorage.setItem("notifications", JSON.stringify([newNotification, ...existingDocs]));
-      }
-
-      setMessages([{ role: "ai", content: `안녕하세요 대표님, ${analysisMode === "detailed" ? "정밀 상세" : "빠른 간략"} 분석이 완료되었습니다. 별도의 창으로 리포트를 띄워드렸습니다. 확인 후 궁금한 점은 언제든 말씀해 주세요!` }]);
-    }, 1500);
-  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -96,7 +52,7 @@ export default function Home() {
       }
       setFile(uploadedFile);
       setError(null);
-      setMessages([{ role: "ai", content: `대표님, [${uploadedFile.name}] 파일이 준비되었습니다. 아래 분석 시작 버튼을 눌러주세요!` }]);
+      setMessages([{ role: "ai", content: `[${uploadedFile.name}] 파일이 준비되었습니다. 아래 분석 시작 버튼을 눌러주세요!` }]);
     }
   };
 
@@ -152,10 +108,10 @@ export default function Home() {
         localStorage.setItem("notifications", JSON.stringify([newNotification, ...existingDocs]));
       }
 
-      setMessages([{ role: "ai", content: "분석이 완료되었습니다, 대표님. 정밀 리포트를 확인해 보세요." }]);
+      setMessages([{ role: "ai", content: "분석이 완료되었습니다. 정밀 리포트를 확인해 보세요." }]);
     } catch (err: any) {
       setError(err.message);
-      setMessages([{ role: "ai", content: `죄송합니다 대표님, 오류가 발생했습니다: ${err.message}` }]);
+      setMessages([{ role: "ai", content: `죄송합니다, 오류가 발생했습니다: ${err.message}` }]);
     } finally {
       setLoading(false);
     }
@@ -167,7 +123,7 @@ export default function Home() {
     setMessages([...messages, { role: "user", content: userInput }]);
     setUserInput("");
     setTimeout(() => {
-      setMessages(prev => [...prev, { role: "ai", content: "현재 분석된 내용을 바탕으로 대표님께 최적의 답변을 준비 중입니다." }]);
+      setMessages(prev => [...prev, { role: "ai", content: "현재 분석된 내용을 바탕으로 최적의 답변을 준비 중입니다." }]);
     }, 800);
   };
 
@@ -182,7 +138,7 @@ export default function Home() {
             </div>
             <div className="space-y-2">
               <h3 className="text-2xl font-black text-[#1E1B4B]">로그인이 필요합니다</h3>
-              <p className="text-slate-500 font-medium">정밀 분석 서비스는 대표님들의 <br /> 안전한 회원 정보가 꼭 필요합니다.</p>
+              <p className="text-slate-500 font-medium">정밀 분석 서비스는 사용자분들의 <br /> 안전한 회원 정보가 꼭 필요합니다.</p>
             </div>
             <div className="flex flex-col gap-3 pt-4">
               <button
@@ -281,12 +237,6 @@ export default function Home() {
                   )}
                 </button>
 
-                <button
-                  onClick={handleDemo}
-                  className="flex items-center justify-center gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-base sm:text-lg hover:border-indigo-100 hover:text-indigo-600 transition-all"
-                >
-                  <Monitor className="w-5 h-5 sm:w-6 sm:h-6" /> 데모 실행
-                </button>
               </div>
             </div>
           </div>

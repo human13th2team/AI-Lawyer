@@ -114,7 +114,7 @@ export default function ComparePage() {
             </div>
             <div className="space-y-2">
               <h3 className="text-2xl font-black text-[#1E1B4B]">로그인이 필요합니다</h3>
-              <p className="text-slate-500 font-medium">정밀 비교 분석 서비스는 대표님들의 <br/> 안전한 회원 정보가 꼭 필요합니다.</p>
+              <p className="text-slate-500 font-medium">정밀 비교 분석 서비스는 사용자분들의 <br/> 안전한 회원 정보가 꼭 필요합니다.</p>
             </div>
             <div className="flex flex-col gap-3 pt-4">
               <button 

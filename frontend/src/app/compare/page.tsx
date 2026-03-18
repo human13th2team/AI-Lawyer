@@ -325,7 +325,7 @@ export default function ComparePage() {
               </div>
             </div>
 
-            {/* Need Expert Alert */}
+            {/* 전문가 매칭 기능 - 추후 개발 사항으로 주석 처리
             {result.needsExpert && (
               <div className="p-8 bg-amber-50 rounded-[32px] border border-amber-200 flex flex-col md:flex-row items-center gap-6">
                 <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -340,6 +340,7 @@ export default function ComparePage() {
                 </button>
               </div>
             )}
+            */}
 
             <div className="flex flex-col md:flex-row justify-center gap-4">
               <button

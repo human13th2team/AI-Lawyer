@@ -9,7 +9,6 @@ import {
   AlertTriangle, 
   Zap, 
   ShieldCheck, 
-  Download, 
   ArrowRight,
   RefreshCcw,
   Scale,
@@ -325,7 +324,7 @@ export default function ComparePage() {
               </div>
             </div>
 
-            {/* Need Expert Alert */}
+            {/* 전문가 매칭 기능 - 추후 개발 사항으로 주석 처리
             {result.needsExpert && (
               <div className="p-8 bg-amber-50 rounded-[32px] border border-amber-200 flex flex-col md:flex-row items-center gap-6">
                 <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
@@ -340,6 +339,7 @@ export default function ComparePage() {
                 </button>
               </div>
             )}
+            */}
 
             <div className="flex flex-col md:flex-row justify-center gap-4">
               <button
@@ -347,9 +347,6 @@ export default function ComparePage() {
                 className="px-10 py-5 bg-white border-2 border-slate-100 text-slate-600 rounded-2xl font-black text-lg hover:border-indigo-100 hover:text-indigo-600 transition-all flex items-center justify-center gap-3"
               >
                 <RefreshCcw className="w-5 h-5" /> 다시 분석하기
-              </button>
-              <button className="px-10 py-5 bg-[#1E1B4B] text-white rounded-2xl font-black text-lg shadow-2xl shadow-indigo-100 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-                <Download className="w-5 h-5" /> 통합 리포트 PDF 저장
               </button>
             </div>
           </div>

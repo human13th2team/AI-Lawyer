@@ -50,6 +50,14 @@ export default function Home() {
         setShowLoginModal(true);
         return;
       }
+      
+      // 빠른 분석 모드일 때 PDF 파일 체크 (Groq 사양 반영)
+      if (analysisMode === "simple" && uploadedFile.type !== 'application/pdf') {
+        setError("빠른 분석은 PDF 파일만 첨부 가능합니다.");
+        setFile(null);
+        return;
+      }
+
       setFile(uploadedFile);
       setError(null);
       setMessages([{ role: "ai", content: `[${uploadedFile.name}] 파일이 준비되었습니다. 아래 분석 시작 버튼을 눌러주세요!` }]);
@@ -184,14 +192,24 @@ export default function Home() {
           <div className="flex justify-center">
             <div className="bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-white shadow-sm inline-flex gap-1 sm:gap-2">
               <button
-                onClick={() => setAnalysisMode("detailed")}
+                onClick={() => {
+                  setAnalysisMode("detailed");
+                  setError(null);
+                }}
                 className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 sm:gap-2 ${analysisMode === "detailed" ? "bg-[#1E1B4B] text-white shadow-lg" : "text-slate-500 hover:bg-white"}`}
               >
                 <Sparkles className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${analysisMode === "detailed" ? "text-indigo-400" : "text-slate-400"}`} />
                 정밀 분석
               </button>
               <button
-                onClick={() => setAnalysisMode("simple")}
+                onClick={() => {
+                  setAnalysisMode("simple");
+                  setError(null);
+                  if (file && file.type !== 'application/pdf') {
+                    setFile(null);
+                    setMessages([{ role: "ai", content: "빠른 분석은 PDF 파일만 지원하므로, 새로운 PDF 파일을 선택해 주세요." }]);
+                  }
+                }}
                 className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 sm:gap-2 ${analysisMode === "simple" ? "bg-[#1E1B4B] text-white shadow-lg" : "text-slate-500 hover:bg-white"}`}
               >
                 <Monitor className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${analysisMode === "simple" ? "text-indigo-400" : "text-slate-400"}`} />
@@ -213,7 +231,12 @@ export default function Home() {
                 {file ? `[${file.name}]` : "계약서 파일을 올려주세요"}
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 font-medium mb-8 sm:mb-10 px-4">
-                {file ? "파일이 준비되었습니다. 아래 버튼을 눌러 분석을 시작하세요." : "PDF, JPG, PNG 파일 업로드를 지원합니다."}
+                {file 
+                  ? "파일이 준비되었습니다. 아래 버튼을 눌러 분석을 시작하세요." 
+                  : analysisMode === "simple" 
+                    ? "빠른 분석은 PDF 파일만 업로드 가능합니다." 
+                    : "PDF, JPG, PNG 파일 업로드를 지원합니다."
+                }
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-auto px-4" onClick={(e) => e.stopPropagation()}>
@@ -222,7 +245,7 @@ export default function Home() {
                   ref={fileInputRef}
                   onChange={handleFileSelect}
                   className="hidden"
-                  accept=".pdf,.jpg,.jpeg,.png"
+                  accept={analysisMode === "simple" ? ".pdf" : ".pdf,.jpg,.jpeg,.png"}
                 />
                 <button
                   onClick={startAnalysis}

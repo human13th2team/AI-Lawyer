@@ -102,16 +102,25 @@ public class AiAnalysisService {
         log.info("AI 분석 시작 | 모드: {} | 엔진: {}", mode, isDetailed ? "Gemini" : "Groq");
 
         try {
-            AiLegalAssistant assistant = (isDetailed) ? geminiAssistant : groqAssistant;
-            if (assistant == null)
-                assistant = (geminiAssistant != null) ? geminiAssistant : groqAssistant;
+            AiLegalAssistant assistant;
 
-            if (assistant == null)
-                throw new IllegalStateException("사용 가능한 AI 서비스가 없습니다.");
+            // 1. 요청된 모드에 맞춰 정확히 해당 엔진만 선택 (바꿔치기 금지!)
+            if (isDetailed) {
+                if (geminiAssistant == null) {
+                    throw new IllegalStateException("Gemini AI 서비스가 초기화되지 않았습니다. API 키를 확인하세요.");
+                }
+                assistant = geminiAssistant;
+            } else {
+                if (groqAssistant == null) {
+                    throw new IllegalStateException("Groq AI 서비스가 초기화되지 않았습니다. .env 파일의 GROQ_API_KEY를 확인하세요.");
+                }
+                assistant = groqAssistant;
+            }
 
             AnalysisResponseDto response = assistant.analyzeContract(extractedText, categoryList);
-            log.info("AI 텍스트 분석 완료");
+            log.info("AI 텍스트 분석 완료 (엔진: {})", isDetailed ? "Gemini" : "Groq");
             return response;
+
         } catch (Exception e) {
             log.error("AI 분석 중 오류: {}", e.getMessage());
             throw new RuntimeException("AI 분석 중 오류가 발생했습니다.", e);
@@ -123,13 +132,19 @@ public class AiAnalysisService {
         log.info("AI 이미지 분석 시작 | 모드: {} | 엔진: {}", mode, isDetailed ? "Gemini Vision" : "Groq");
 
         try {
-            // Groq는 비전 성능이 낮으므로 이미지는 가급적 Gemini(상세)로 유도하나, 모드에 따라 선택
-            AiLegalAssistant assistant = (isDetailed) ? geminiVisionAssistant : groqAssistant;
-            if (assistant == null)
-                assistant = geminiVisionAssistant;
+            AiLegalAssistant assistant;
 
-            if (assistant == null)
-                throw new IllegalStateException("사용 가능한 비전 서비스가 없습니다.");
+            if (isDetailed) {
+                if (geminiVisionAssistant == null) {
+                    throw new IllegalStateException("Gemini 비전 서비스가 초기화되지 않았습니다.");
+                }
+                assistant = geminiVisionAssistant;
+            } else {
+                if (groqAssistant == null) {
+                    throw new IllegalStateException("Groq AI 서비스가 초기화되지 않았습니다.");
+                }
+                assistant = groqAssistant;
+            }
 
             Image image = Image.builder()
                     .base64Data(Base64.getEncoder().encodeToString(imageBytes))
@@ -139,6 +154,7 @@ public class AiAnalysisService {
             AnalysisResponseDto response = assistant.analyzeContractImage(image, categoryList);
             log.info("AI 이미지 분석 완료");
             return response;
+
         } catch (Exception e) {
             log.error("AI 이미지 분석 중 오류: {}", e.getMessage());
             throw new RuntimeException("이미지 분석 중 오류가 발생했습니다.", e);

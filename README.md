@@ -1,5 +1,3 @@
-\<div align="center"\>
-
 # ⚖️ AI-Lawyer (올라운드 법률 에이전트)
 
 **"어렵고 복잡한 모든 종류의 계약서 분석부터, 실시간 사후 감시, 전문가 매칭까지 원스톱 해결"**
@@ -10,7 +8,6 @@
 [](https://supabase.com/)
 [](https://www.google.com/search?q=LICENSE)
 
-\</div\>
 
 -----
 

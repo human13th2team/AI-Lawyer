@@ -4,7 +4,7 @@
 
   **"어렵고 복잡한 모든 종류의 계약서 분석부터, 실시간 사후 감시, 전문가 매칭까지 원스톱 해결"**
 
-  [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+  [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
   [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
   [![Gemini](https://img.shields.io/badge/Google_Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
   [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
@@ -108,7 +108,7 @@ erDiagram
 ## 🛠 기술 스택 (Tech Stack)
 
 ### Frontend
-- **Framework**: Next.js 15 (App Router), React 19
+- **Framework**: Next.js 16 (App Router), React 19
 - **Styling**: Tailwind CSS 4, Lucid React (Icons)
 - **Visualization**: Recharts (Risk Scoring Chart)
 - **State Management**: React Server Components & Client Hooks
@@ -130,6 +130,14 @@ erDiagram
 ## 🏗 시스템 아키텍처 (Architecture)
 
 ![System Architecture](architecture.png)
+
+---
+
+## 🛠️ 기술적 난제 및 해결 (Technical Challenges)
+
+- **AI 협업 컨벤션 불일치**: `.ai-rules.md`를 도입하여 팀 단위 컨벤션에 맞춘 코드 생성 제어
+- **DB 대소문자 매핑 이슈**: `entity-guide.md` 워크플로우를 통해 Supabase와 엔티티 간 불일치 해결
+- **플랫폼 간 CORS 이슈**: `SecurityConfig` 설정을 통해 Netlify-Koyeb 간 통신 보장
 
 ---
 
@@ -170,19 +178,8 @@ erDiagram
 
 ---
 
-## 🛠️ 기술적 난제 및 해결 (Technical Challenges)
 
-- **AI 협업 컨벤션 불일치**: `.ai-rules.md`를 도입하여 팀 단위 컨벤션에 맞춘 코드 생성 제어
-- **DB 대소문자 매핑 이슈**: `entity-guide.md` 워크플로우를 통해 Supabase와 엔티티 간 불일치 해결
-- **플랫폼 간 CORS 이슈**: `SecurityConfig` 설정을 통해 Netlify-Koyeb 간 통신 보장
 
----
-
-## 📄 라이선스 (License)
-
-본 프로젝트는 [MIT License](LICENSE)에 따라 배포됩니다.
-
----
 
 <div align="center">
   <b>Representative:</b> ashfortune (Human13th Team) | <b>Contact:</b> support@ai-lawyer.com

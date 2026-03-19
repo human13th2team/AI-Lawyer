@@ -66,18 +66,7 @@
 
 ## 🏗 시스템 아키텍처 (Architecture)
 
-```mermaid
-graph TD
-    User([사용자]) -->|파일 업로드| FE[Next.js Frontend]
-    FE -->|API 호출| BE[Spring Boot Backend]
-    BE -->|임시 전처리| P1[민감 정보 마스킹]
-    P1 -->|텍스트 추출| P2[PDFBox Parser]
-    P2 -->|RAG 검색/분석| AI[Gemini / LangChain4j]
-    AI -->|결과 생성| R[인사이트 리포트]
-    R -->|DB 저장/조회| DB[(Supabase / PGVector)]
-    BE -->|결과 반환| FE
-    FE -->|시각화| User
-```
+![System Architecture](architecture.png)
 
 ---
 

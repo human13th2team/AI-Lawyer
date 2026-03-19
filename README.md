@@ -58,7 +58,9 @@
 - **AI Integration**: LangChain4j (Gemini, OpenAI, PGVector)
 - **Document Processing**: Apache PDFBox
 
-### Infrastructure / Deployment
+### Infrastructure / Deployment & CI/CD
+- **Frontend**: [Netlify](https://www.netlify.com/) (자동 배포 및 호스팅)
+- **Backend**: [Koyeb](https://www.koyeb.com/) (Dockerfile 기반 서버 배포 및 CI/CD)
 - **Storage**: Supabase Storage
 - **Security**: JJWT (Spring Security Integration)
 

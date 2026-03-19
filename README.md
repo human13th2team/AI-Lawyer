@@ -1,71 +1,135 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  <img width="1200" height="475" alt="AI-Lawyer Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
+  # ⚖️ AI-Lawyer (올라운드 법률 에이전트)
+
+  **"어렵고 복잡한 모든 종류의 계약서 분석부터, 실시간 사후 감시, 전문가 매칭까지 원스톱 해결"**
+
+  [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+  [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+  [![Gemini](https://img.shields.io/badge/Google_Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
+  [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 </div>
-
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/87069390-fd83-4290-a5a6-13161df6c405
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
 
 ---
 
-# AI-Lawyer 프로젝트 가이드 (Project Guidelines)
+## 🌟 서비스 소개 (Overview)
 
-> **팀원 및 AI 에이전트 필독 가이드 (For 6 Collaborators & AI Assistants)**  
-> 해당 문서는 6명의 팀원과 저(AI 에이전트)를 비롯한 모든 프로젝트 참여자가 공통의 목표와 핵심 기능을 명확히 인지하고 개발을 진행할 수 있도록 작성된 기획안입니다. 프로젝트 내 기능 추가/수정 시 항상 아래의 핵심 가치와 세부 기획안을 최우선으로 고려합니다.
+**AI-Lawyer**는 법률 지식이 부족하여 계약 체결 전후로 불안감을 느끼는 개인 및 사업자를 위한 **지능형 법률 리스크 관리 플랫폼**입니다. 단순히 문서를 분석하는 것에 그치지 않고, 사용자의 권익을 보호하기 위한 협상 지원과 사후 모니터링까지 책임집니다.
 
-## 1. 서비스 개요 (Service Overview)
+- **미션**: "모두가 법적 평등을 누릴 수 있는 세상을 향하여"
+- **핵심 가치**: 리스크 사전 예방 | 전 과정 모니터링 | 집단지성 연대
 
-* **서비스명**: AI-Lawyer (올라운드 법률 에이전트)
-* **한줄 소개**: "어렵고 복잡한 모든 종류의 계약서 분석부터, 실시간 사후 감시, 전문가 매칭까지 원스톱으로 해결해 드립니다."
-* **핵심 가치**:
-  * **리스크 사전 예방**: 전문가 없이도 불리한 '독소조항'을 즉각 발견하여 법적 방어권 확보
-  * **전 과정 모니터링**: 체결 시점뿐만 아니라 이행 과정 전체를 관리하는 사후 리스크 케어
-  * **집단지성 연대**: 거대 플랫폼/기업의 불공정 조항을 공론화하고 피해자 간 데이터 공유 및 연대
+---
 
-## 2. 타겟 고객 (Target Audience)
+## ✨ 핵심 기능 (Core Features)
 
-법률 지식 부족으로 계약 체결 전/후 불안감을 느끼는 B2C 및 개인 사업자:
-* **근로자/프리랜서**: 근로·용역계약 전 불리함 확인 및 체결 후 임금 체불/부당 대우 관리 희망자
-* **스타트업 대표**: 투자·동업 계약서 초벌 점검 및 스타트업 전문 변호사 매칭 희망자
-* **일반 소비자**: 헬스장, 플랫폼 이용약관 등 반복되는 계약 내 '갑질 조항' 확인 및 위험 인지 희망자
+### 🛡️ 신뢰와 안전 (Security & Privacy)
+- **개인정보 비식별화**: AI 분석 전 자동 마스킹 처리를 통해 민감 정보 보호
+- **휘발성 시스템**: 분석 즉시 데이터를 영구 파기하여 유출 방지 (UI 파쇄기 애니메이션 등 적용)
 
-## 3. 핵심 기능 및 차별화 포인트 (Core Features)
+### 🔍 똑똑한 분석 (Smart AI Parser)
+- **문서 자동 식별**: 계약서가 아닌 문서(자소서 등) 업로드 시 즉시 판별 및 안내
+- **다국어 지원**: 영문, 중문 등 다국어 계약서도 고도화된 AI가 한글로 분석 및 해설
 
-### ① 신뢰도와 안전성 강화 (Security & Trust)
-* **개인정보 비식별화 (Anonymization)**: AI 분석 전 이름, 주민번호, 주소, 연락처 등 민감 정보를 자동 마스킹 처리
-* **휘발성 분석 시스템**: "분석 즉시 데이터 영구 파기" 원칙 적용 (UI상 파쇄기 애니메이션 등으로 사용자 안심 유도)
+### 📊 인사이트 리포트 (Intelligent Insight)
+- **표준 약관 비교**: 공정위 등 표준 약관과 대조하여 위험도 도출 (0~100점 스코어링)
+- **협상 스크립트**: 독소조항 수정 요청을 위한 "전문적이고 정중한" 문구 자동 생성
+- **Interactive Q&A**: 분석 결과 기반의 RAG 챗봇을 통해 궁금한 점 즉시 확인
 
-### ② 똑똑한 문서 식별 및 분석 (Smart AI Parser)
-* **다국어 계약서 판별**: 이미지/PDF 원문을 자동 분류하며 영문, 중문 등 다국어 계약서도 한국어로 분석 지원
-* **예외 처리 로직**: 계약서가 아닌 문서(자소서, 영수증 등) 업로드 시 즉시 판별하여 분석 중단 및 안내 메시지 출력
+### 🚀 사후 관리 및 공유 (Post-Contract & Shared Insight)
+- **가디언 (사후 감시)**: 리스크 발생 조건(기한 등)을 AI가 기억하여 사전 알림 제공
+- **독소조항 블랙리스트**: 특정 기업의 불공정 조항 데이터를 익명 수집/공유하여 2차 피해 방지
+- **전문가 브릿지**: 중대 서류 판정 시 변호사/노무사 다이렉트 매칭 지원
 
-### ③ 지능형 인사이트 리포트 및 협상 지원 (Smart Analysis)
-* **표준 약관 비교 (Benchmark)**: 공정위·고용부 등의 '표준 약관'과 대조하여 불리한 항목을 스코어링(0~100점) 및 시각화
-* **조항별 진단 및 협상 스크립트**: 독소조항 해설과 함께 상대방에게 발송할 수 있는 "정중한 수정 요청 문구" 자동 생성
-* **대화형 질의응답 (Interactive Legal Q&A)**: 분석 결과를 바탕으로 한 RAG 기반 챗봇 배치 (예: "내일 해지 시 위약금 얼마?")
+---
 
-### ④ 실시간 계약 모니터링 '가디언' (사후 관리 시스템)
-* **독소 조항 트리거 관리**: 계약서 내 주요 기한이나 조건 발동 시점을 AI가 기억하여 사전 알림 제공
-* **알림 예시**: "납기 5일 전입니다. 제7조항에 따라 미준수 시 계약금 30% 위약금 발생 주의!"
+## 🛠 기술 스택 (Tech Stack)
 
-### ⑤ '독소 조항 블랙리스트' 공유 및 통계 (Platform Insight)
-* **집단지성 데이터베이스**: 특정 기업의 반복적인 불공정 조항 데이터를 익명 수집하여 계약서 업로드 시 경고 팝업 노출
-* **통계 대시보드**: "프리랜서 계약 위험 조항 TOP 3", "산업군별 평균 위험도" 등 익명화된 데이터 시각화 제공
+### Frontend
+- **Framework**: Next.js 15 (App Router), React 19
+- **Styling**: Tailwind CSS 4, Lucid React (Icons)
+- **Visualization**: Recharts (Risk Scoring Chart)
+- **State Management**: React Server Components & Client Hooks
 
-### ⑥ 사용자 경험 극대화 (UX Delight)
-* **계약서 비교 분석 (A/B Test)**: 두 장의 계약서를 동시 업로드하여 어느 쪽이 나에게 더 유리한지 대조 분석
-* **전문 PDF 리포트 내보내기**: 분석 결과, 표준 약관 비교치, 협상 스크립트를 포함한 통합 리포트 생성 및 이메일 전송
-* **전문가 다이렉트 브릿지**: 중대 서류 판정 시 변호사/노무사 매칭 버튼 노출 (AI 리포트 사전 공유로 상담 효율 극대화)
+### Backend
+- **Framework**: Spring Boot 3.5, Java 17
+- **Database**: PostgreSQL (Supabase), MyBatis
+- **AI Integration**: LangChain4j (Gemini, OpenAI, PGVector)
+- **Document Processing**: Apache PDFBox
+
+### Infrastructure / Deployment
+- **Storage**: Supabase Storage
+- **Security**: JJWT (Spring Security Integration)
+
+---
+
+## 🏗 시스템 아키텍처 (Architecture)
+
+```mermaid
+graph TD
+    User([사용자]) -->|파일 업로드| FE[Next.js Frontend]
+    FE -->|API 호출| BE[Spring Boot Backend]
+    BE -->|임시 전처리| P1[민감 정보 마스킹]
+    P1 -->|텍스트 추출| P2[PDFBox Parser]
+    P2 -->|RAG 검색/분석| AI[Gemini / LangChain4j]
+    AI -->|결과 생성| R[인사이트 리포트]
+    R -->|DB 저장/조회| DB[(Supabase / PGVector)]
+    BE -->|결과 반환| FE
+    FE -->|시각화| User
+```
+
+---
+
+## 🚀 시작하기 (Getting Started)
+
+### 사전 요구 사항 (Prerequisites)
+- [Node.js 20+](https://nodejs.org/)
+- [Java 17+](https://adoptium.net/ko/)
+- [Gemini API Key](https://aistudio.google.com/app/apikey)
+- [Supabase Account](https://supabase.com/)
+
+### 프로젝트 구조
+- `frontend/`: Next.js 기반 UI 어플리케이션
+- `backend/`: Spring Boot 기반 API 서버
+
+### 백엔드 설정 (Backend Setup)
+1. `backend/src/main/resources/.env` 파일을 만들고 아래 내용을 설정합니다.
+   ```bash
+   DB_URL=jdbc:postgresql://your-supabase-url:5432/postgres
+   DB_USERNAME=your-username
+   DB_PASSWORD=your-password
+   GEMINI_API_KEY=your-gemini-key
+   JWT_SECRET=your-jwt-secret
+   ```
+2. 서버 실행:
+   ```bash
+   cd backend
+   ./gradlew bootRun
+   ```
+
+### 프론트엔드 설정 (Frontend Setup)
+1. `frontend/.env.local` 파일을 만들고 API 경로를 설정합니다.
+   ```bash
+   NEXT_PUBLIC_API_URL=http://localhost:8080
+   ```
+2. 의존성 설치 및 실행:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+---
+
+## 📄 라이선스 (License)
+
+본 프로젝트는 [MIT License](LICENSE)에 따라 배포됩니다.
+
+---
+
+<div align="center">
+  <b>Representative:</b> ashfortune (Human13th Team)  
+  <b>Contact:</b> support@ai-lawyer.com
+</div>

@@ -124,6 +124,107 @@ erDiagram
 - **Storage**: Supabase Storage
 
 ---
+## ✅ UI 개요 (UI Overview)
+
+### 로그인 및 회원가입
+<table>
+  <tr>
+    <td align="center"><b>로그인</b></td>
+    <td align="center"><b>회원가입</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/1de2680c-e5bc-4dbc-8155-32576042f7c1" width="80%" height="60%">
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/5bd220fd-2d45-4302-8ce8-3611b9d5376c" width="80%" height="60%">
+    </td>
+  </tr>
+</table>
+
+***회원가입 및 로그인***
+- 회원가입으로 회원정보 'User' 테이블에 저장
+- 로그인 시 jwt 토큰 생성
+- Spring security로 접근 가능한 페이지 제한
+<br/>
+
+### 계약 문서 업로드(정밀 분석, 빠른 분석 선택 가능)
+<table>
+  <tr>
+    <td align="center"><b>계약서 업로드</b></td>
+    <td align="center"><b>분석 진행중</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/91585fe3-c081-4be1-bd80-60bfb590b4dd" width="100%" height="80%" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/61c5b971-fcff-4d16-a78e-f3b6cb98ef36" width="100%" height="80%"/>
+    </td>
+  </tr>
+</table>
+
+***AI 기반 계약서 분석***
+- 계약서 파일 업로드 후 분석 시작 버튼을 눌러 분석 시작
+- 정밀 분석: Gemini-2.5-flash 모델이 사용됨
+- 빠른 분석: Groq API에서 호출된 llama-3.3-70b-versatile 모델이 사용됨
+<br/>
+
+### 계약 문서 분석 결과
+<table>
+  <tr>
+    <td align="center"><b>계약서 분석 리포트</b></td>
+    <td align="center"><b>마감일 추출</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/0dc847fa-ab3e-420a-a44c-bd4c1073f56c" width="100%" height="100%" />
+    </td>
+    <td align="center">
+     <img src="https://github.com/user-attachments/assets/e983b071-a571-4091-a6e4-6988a585c3d3"width="100%" height="100%" />
+    </td>
+  </tr>
+</table>
+
+***분석 결과 제공***
+- 계약서의 종합 분석 결과(텍스트), 점수(정수), 유불리 조항 소개 및 분석
+- 마감일이 작성된 경우 날짜 안내, 현재 날짜와 비교하여 10일 이하로 남은 경우 화면 알림
+- 오른쪽 하단 AI 챗봇으로 분석 결과에 대한 상담 가능(RAG)
+<br/>
+
+### 두 가지 계약서 비교
+<table>
+  <tr>
+    <td align="center"><b>두 가지 계약서 업로드 화면</b></td>
+    <td align="center"><b>비교 분석 결과</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/f81f0220-9e73-4f14-99ed-1060502b9c7f" width="100%" height="80%" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/383658d8-e312-4618-9414-d339b6c14a05" width="100%" height="80%" />
+    </td>
+  </tr>
+</table>
+
+***계약서 비교 기반 분석***
+- 계약서 선택을 돕는 분석 결과를 제공
+- 2개 파일 업로드 후, gemini-2.5-flash 모델이 비교 분석
+- 계약서 점수 기반 분석 결과를 상단에 제공
+- 각 계약서별로 긍정적/부정적 측면의 요약 제공
+<br/>
+
+### 계약서 분석 결과 대시보드
+<img src="https://github.com/user-attachments/assets/16377d2a-990d-4541-bc2a-c6e5e5f0a99e" width="60%" height="60%"/>
+
+***데이터 시각화***
+- 서비스에서 산출된 계약서의 전체 폎균 점수, 분석된 계약서 수, 날짜별 분석 수 등 저장된 데이터 집계 및 시각화
+- 계약서 카테고리(근로/노무, 용역/프리랜서, 부동산/임대차, 기업/투자, 소비자/기타)별 세부 대시보드 페이지 제공
+- 하단의 카테고리별 위험도 랭킹의 카테고리명을 클릭하여 세부 대시보드 페이지로 이동 가능
+<br/>
+
+---
 
 ## 🛠 핵심 트러블슈팅 (Troubleshooting)
 
